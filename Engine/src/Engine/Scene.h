@@ -17,7 +17,7 @@ class ModelPart;
 class Mesh;
 class Material;
 class Texture;
-class Vertex;
+struct Vertex;
 struct Face;
 class Light;
 //class Animation;
@@ -26,23 +26,29 @@ class Light;
 class Mesh
 {
 public:
+	Mesh(void) {};
 	Mesh(const aiMesh* mesh, const glm::mat4& transform, const glm::mat4& parentTransform, const SPtr<Material>& material);
 
 	void SetParentTransform(const glm::mat4& transform) { m_WorldTransform = transform * m_LocalTransform; }
 
-	void Render(void);
-	void Render(const SPtr<Engine::Shader>& shader);
+	void Render(void) const;
+	void Render(const SPtr<Engine::Shader>& shader) const;
 	
 	void GetIndecies(std::vector<uint>& indicies) const;
 
-private:
-	void SetupRenderable(void);
-
-	std::string			m_Name;
+protected:
+	virtual BufferLayout	GetVboLayout	(void) const;
+	virtual void			UploadUniforms	(const SPtr<Shader>& shader) const;
+	void					SetupRenderable	(void);
+	
+	glm::mat4 m_WorldTransform = glm::mat4(1.f);
 	std::vector<Vertex> m_Verts;
 	std::vector<Face>	m_Faces;
-	glm::mat4			m_WorldTransform;
-	glm::mat4			m_LocalTransform;
+
+private:
+
+	std::string			m_Name;
+	glm::mat4			m_LocalTransform = glm::mat4(1.f);
 	SPtr<Material>		m_Material;
 	SPtr<VertexArray>	m_VAO;
 };
@@ -112,30 +118,43 @@ private:
 };
 
 
-class Vertex
+struct Vertex
 {
-public:
 	Vertex(const glm::vec3& position, const glm::vec3& normal, const glm::vec3& tangent, const glm::vec3& bitangent, const glm::vec2& uv)
-		: m_Position(position)
-		, m_Normal(normal)
-		, m_Tangent(tangent)
-		, m_Bitangent(bitangent)
-		, m_UV(uv) { }
+		: position(position)
+		, normal(normal)
+		, tangent(tangent)
+		, bitangent(bitangent)
+		, uv(uv) { }
 
-
-private:
-	glm::vec3 m_Position;
-	glm::vec3 m_Normal;
-	glm::vec3 m_Tangent;
-	glm::vec3 m_Bitangent;
-	glm::vec2 m_UV;
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec3 tangent;
+	glm::vec3 bitangent;
+	glm::vec2 uv;
 };
 
 
 struct Face
 {
+	Face(void) {};
+	Face(uint i0, uint i1, uint i2) { indecies = { i0, i1, i2 }; };
+
 	std::vector<uint> indecies;
 };
+
+
+class Cube : public Mesh
+{
+public:
+	Cube(const glm::mat4& transform, float scale = 1.f);
+
+	void SetTransform(const glm::mat4& transform) { m_WorldTransform = transform; } 
+
+protected:
+	virtual void UploadUniforms(const SPtr<Shader>& shader) const override {}
+};
+
 
 }
 }

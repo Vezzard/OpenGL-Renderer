@@ -9,16 +9,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\simple_texture_v.glsl">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="assets\shaders\default_f.glsl">
       <Filter>shaders</Filter>
     </None>
     <None Include="assets\shaders\default_v.glsl">
       <Filter>shaders</Filter>
     </None>
-    <None Include="assets\shaders\simple_texture_f.glsl">
+    <None Include="assets\shaders\flat_color_v.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="assets\shaders\flat_color_f.glsl">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

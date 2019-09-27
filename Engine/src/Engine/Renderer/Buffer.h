@@ -43,8 +43,8 @@ struct BufferElement
 {
 	std::string Name;
 	ShaderDataType Type;
-	uint32_t Size;
-	uint32_t Offset;
+	uint Size;
+	uint Offset;
 	bool Normalized;
 
 	BufferElement() {}

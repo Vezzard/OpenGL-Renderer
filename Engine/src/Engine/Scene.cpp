@@ -2,8 +2,6 @@
 #include "Scene.h"
 #include "Renderer/Renderer.h"
 
-Engine::SPtr<Engine::Texture2D> GlobalTexture;
-
 namespace Engine {
 namespace Scn {
 
@@ -31,7 +29,6 @@ Model::Model(const aiScene* scene)
 	for (uint i = 0; i < scene->mNumTextures; ++i) {
 		aiTexture* aiTex = scene->mTextures[i];
 		unsigned char* data = reinterpret_cast<unsigned char*>(aiTex->pcData);
-		//auto& t = m_Textures.emplace_back(std::make_shared<Texture>(aiTex->mWidth, aiTex->mHeight, data));
 		auto& t = m_Textures.emplace_back(std::make_shared<Texture>(aiTex->mName));
 		t->Load();
 	}
@@ -103,13 +100,7 @@ void Mesh::SetupRenderable(void)
 	SPtr<VertexBuffer> vbo;
 	float* rawVerts = reinterpret_cast<float*>(m_Verts.data());
 	vbo.reset(VertexBuffer::Create(rawVerts, m_Verts.size() * sizeof(Vertex)));
-	vbo->SetLayout({
-		{ Engine::ShaderDataType::Float3, "a_Position" },
-		{ Engine::ShaderDataType::Float3, "a_Normal" },
-		{ Engine::ShaderDataType::Float3, "a_Tangent" },
-		{ Engine::ShaderDataType::Float3, "a_Bitangent" },
-		{ Engine::ShaderDataType::Float2, "a_UV" }
-	});
+	vbo->SetLayout(GetVboLayout());
 	m_VAO->AddVertexBuffer(vbo);
 
 	std::vector<uint> inds;
@@ -120,15 +111,34 @@ void Mesh::SetupRenderable(void)
 }
 
 
-void Mesh::Render(void)
+Engine::BufferLayout Mesh::GetVboLayout(void) const
+{
+	return {
+		{ Engine::ShaderDataType::Float3, "a_Position" },
+		{ Engine::ShaderDataType::Float3, "a_Normal" },
+		{ Engine::ShaderDataType::Float3, "a_Tangent" },
+		{ Engine::ShaderDataType::Float3, "a_Bitangent" },
+		{ Engine::ShaderDataType::Float2, "a_UV" }
+	};
+}
+
+
+void Mesh::Render(void) const
 {
 	
 }
 
 
-void Mesh::Render(const SPtr<Shader>& shader)
+void Mesh::Render(const SPtr<Shader>& shader) const
 {
 	shader->Bind();
+	UploadUniforms(shader);
+	Renderer::Submit(shader, m_VAO, m_WorldTransform);
+}
+
+
+void Mesh::UploadUniforms(const SPtr<Shader>& shader) const
+{
 	shader->UploadUniformFloat("u_material.shininess", 32.f);
 
 	for (const auto& t : m_Material->GetTextures()) {
@@ -137,17 +147,13 @@ void Mesh::Render(const SPtr<Shader>& shader)
 		case Texture::Type::Diffuse:
 			shader->UploadUniformInt("u_material.diffuse", 0);
 			t->GetRenderTex()->Bind(0);
-			//GlobalTexture->Bind(0);
 			break;
 		case Texture::Type::Specular:
 			shader->UploadUniformInt("u_material.specular", 1);
 			t->GetRenderTex()->Bind(1);
-			//GlobalTexture->Bind(1);
 			break;
 		}
 	}
-
-	Renderer::Submit(shader, m_VAO, m_WorldTransform);
 }
 
 
@@ -207,11 +213,49 @@ aiTextureType Texture::ConvertType(Type type)
 void Texture::Load(void)
 {
 	if (!IsLoaded()) {
-		std::string path = "assets/textures2/" + m_Name;
+		std::string path = "assets/textures/" + m_Name;
 		m_RenderTex = Texture2D::Create(path);
 	}
 }
 
+
+Cube::Cube(const glm::mat4& transform, float scale /*= 1.f*/)
+{
+	SetTransform(transform);
+
+	glm::vec3 v3(0.f);
+	glm::vec2 v2(0.f);
+	m_Verts = {  
+		{ { -1.f, -1.f,  1.f }, v3, v3, v3, v2 }, //0
+		{ {  1.f, -1.f,  1.f }, v3, v3, v3, v2 }, //1
+		{ {  1.f,  1.f,  1.f }, v3, v3, v3, v2 }, //2
+		{ { -1.f,  1.f,  1.f }, v3, v3, v3, v2 }, //3
+		{ {  1.f, -1.f, -1.f }, v3, v3, v3, v2 }, //4
+		{ {  1.f,  1.f, -1.f }, v3, v3, v3, v2 }, //5
+		{ { -1.f,  1.f, -1.f }, v3, v3, v3, v2 }, //6
+		{ { -1.f, -1.f, -1.f }, v3, v3, v3, v2 }  //7
+	};
+
+	for (auto& v : m_Verts)
+		v.position *= scale;
+
+	m_Faces = {
+		{ 0, 1, 3 },
+		{ 1, 2, 3 },
+		{ 1, 2, 5 },
+		{ 1, 4, 5 },
+		{ 6, 5, 4 },
+		{ 6, 7, 4 },
+		{ 0, 3, 6 },
+		{ 0, 7, 6 },
+		{ 3, 2, 5 },
+		{ 3, 6, 5 },
+		{ 0, 1, 4 },
+		{ 0, 7, 4 }
+	};
+
+	SetupRenderable();
+}
 
 }
 }

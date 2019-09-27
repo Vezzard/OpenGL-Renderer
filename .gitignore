@@ -2,8 +2,14 @@
 .vs/
 bin-int/
 bin/
-Sandbox/assets/
+Sandbox/assets/models/
+Sandbox/assets/textures/
 *.sln
 .gitattributes
 *.vcxproj
 *.vcxproj.user
+Sandbox/assets/shaders/simple_f.glsl
+Sandbox/assets/shaders/simple_texture_f.glsl
+Sandbox/assets/shaders/simple_texture_v.glsl
+Sandbox/assets/shaders/simple_v.glsl
+Sandbox/imgui.ini
