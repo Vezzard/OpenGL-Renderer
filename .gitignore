@@ -1,0 +1,9 @@
+
+.vs/
+bin-int/
+bin/
+Sandbox/assets/
+*.sln
+.gitattributes
+*.vcxproj
+*.vcxproj.user
