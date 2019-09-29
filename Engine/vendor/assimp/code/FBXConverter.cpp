@@ -1734,6 +1734,8 @@ unsigned int Converter::ConvertMaterial( const Material& material, const MeshGeo
         name = name.substr( 10 );
     }
 
+    out_mat->mName = name;
+
     // set material name if not empty - this could happen
     // and there should be no key for it in this case.
     if ( name.length() ) {

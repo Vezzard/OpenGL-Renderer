@@ -27,6 +27,8 @@ public:
 		const aiScene* scene = importer.ReadFile("D:/Projects/Engine/versions/1.3/Sandbox/assets/models/nanosuit/scene.fbx", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 		ASSERT(scene);
 		m_Model = std::make_shared<Engine::Scn::Model>(scene);
+		m_Model->AddTexture("Body", "body_showroom_ddn.png", Engine::Scn::Texture::Type::Bump);
+		m_Model->AddTexture("Arm", "arm_showroom_ddn.png", Engine::Scn::Texture::Type::Bump);
 		
 		m_Camera.SetPerspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f);
 
@@ -76,6 +78,8 @@ public:
 		Engine::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.f });
 		Engine::RenderCommand::Clear();
 
+		m_LightSources[0]->SetTransform(glm::translate(glm::mat4(1.f), m_ScnLight.pointLights[0].position));
+
 		Engine::Renderer::BeginScene(m_Camera.GetRenderCamera());
 
 		auto& sl = m_ScnLight.spotLights[0];
@@ -84,6 +88,7 @@ public:
 
 		m_DefaultShader->Bind();
 		m_DefaultShader->UploadUniformsDefaultLighting(m_ScnLight, m_Camera.GetPosition());
+		m_DefaultShader->UploadUniformInt("u_dbgDisableNormalMapping", m_DbgDisableNormalMapping ? 1 : 0);
 		m_Model->Render(m_DefaultShader);
 
 		for (const auto& ls : m_LightSources)
@@ -92,6 +97,8 @@ public:
 		Engine::Renderer::EndScene();
 	}
 
+	bool m_DbgDisableNormalMapping = false;
+
 	virtual void OnImGuiRender() override
 	{
 		auto& dl = m_ScnLight.dirLight;
@@ -99,11 +106,13 @@ public:
 		auto& sl = m_ScnLight.spotLights[0];
 
 		ImGui::Begin("Settings");
+		
 		ImGui::ColorEdit3("Dir light direction",	glm::value_ptr(dl.direction));
 		ImGui::ColorEdit3("Dir light ambient",		glm::value_ptr(dl.ambient));
 		ImGui::ColorEdit3("Dir light diffuse",		glm::value_ptr(dl.diffuse));
 		ImGui::ColorEdit3("Dir light specular",		glm::value_ptr(dl.specular));
 
+		ImGui::SliderFloat3("Point light position",	glm::value_ptr(pl.position), -15.f, 15.f);
 		ImGui::ColorEdit3("Point light ambient",	glm::value_ptr(pl.ambient));
 		ImGui::ColorEdit3("Point light diffuse",	glm::value_ptr(pl.diffuse));
 		ImGui::ColorEdit3("Point light specular",	glm::value_ptr(pl.specular));
@@ -117,6 +126,9 @@ public:
 		ImGui::SliderFloat("Spot light constant",	&sl.constant, 0.f, 1.f);
 		ImGui::SliderFloat("Spot light linear",		&sl.linear, 0.f, 1.f);
 		ImGui::SliderFloat("Spot light quadratic",	&sl.quadratic, 0.f, 1.f);
+
+		ImGui::Checkbox("Disable normal mapping",	&m_DbgDisableNormalMapping);
+
 		ImGui::End();
 	}
 

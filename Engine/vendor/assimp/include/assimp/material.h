@@ -48,6 +48,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define AI_MATERIAL_H_INC
 
 #include "types.h"
+#include <string>
 
 #ifdef __cplusplus
 extern "C" {
@@ -878,6 +879,8 @@ public:
 
      /** Storage allocated */
     unsigned int mNumAllocated;
+
+    std::string mName;
 };
 
 // Go back to extern "C" again

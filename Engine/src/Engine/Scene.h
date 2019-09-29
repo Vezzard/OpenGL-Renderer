@@ -54,14 +54,48 @@ private:
 };
 
 
+class Texture
+{
+public:
+	enum class Type {
+		None,
+		Ambient,
+		Diffuse,
+		Specular,
+		Normal,
+		Bump,
+	};
+
+	Texture(const std::string& name)
+		: m_Name(name) { }
+
+	static aiTextureType	ConvertType(Type type);
+	bool					IsLoaded(void) const { return m_RenderTex.get(); }
+	void					Load(void);
+	const std::string&		GetName(void) const { return m_Name; }
+	void					SetType(Type type) { m_Type = type; }
+	Type					GetType(void) const { return m_Type; }
+	SPtr<Texture2D>			GetRenderTex(void) { return m_RenderTex; }
+
+private:
+	Type m_Type = Type::None;
+	std::string m_Name;
+
+	SPtr<Texture2D> m_RenderTex;
+};
+
+
 class Model
 {
 public:
 	Model(const aiScene* scene);
 
-	SPtr<Texture> GetTexture(uint idx)						{ return m_Textures[idx]; }
-	void	      Render    (void)							{ for (auto& m : m_Meshes) m->Render(); }
-	void	      Render	(const SPtr<Shader>& shader)	{ for (auto& m : m_Meshes) m->Render(shader); }
+	SPtr<Texture> GetTexture	(uint idx)						{ return m_Textures[idx]; }
+	void	      Render		(void)							{ for (auto& m : m_Meshes) m->Render(); }
+	void	      Render		(const SPtr<Shader>& shader)	{ for (auto& m : m_Meshes) m->Render(shader); }
+
+	SPtr<Material>	GetMaterial	(const std::string& name);
+	void			AddTexture	(const std::string& matName, const std::string& texName, Texture::Type type);
 
 private:
 	void ProcessNode(const aiNode* node, const aiScene* scene);
@@ -74,47 +108,24 @@ private:
 };
 
 
-class Texture
-{
-public:
-	enum class Type {
-		None,
-		Ambient,
-		Diffuse,
-		Specular
-	};
-
-	Texture(const std::string& name)
-		: m_Name(name) { }
-
-	static aiTextureType	ConvertType		(Type type);
-	bool					IsLoaded		(void) const	{ return m_RenderTex.get(); }
-	void					Load			(void);
-	const std::string&		GetName			(void) const	{ return m_Name; }
-	void					SetType			(Type type)		{ m_Type = type; }
-	Type					GetType			(void) const	{ return m_Type; }
-	SPtr<Texture2D>			GetRenderTex	(void)			{ return m_RenderTex; }
-
-private:
-	Type m_Type = Type::None;
-	std::string m_Name;
-
-	SPtr<Texture2D> m_RenderTex;
-};
-
-
 class Material
 {
 public:
+	using TextureList = std::vector<SPtr<Texture>>;
+
 	Material(const aiMaterial* material, Model& model, const std::string& shader = "default");
 
-	const std::vector<SPtr<Texture>>& GetTextures(void) const { return m_Textures; } 
+	const TextureList& GetTextures	(void) const { return m_Textures; }
+	const std::string& GetName		(void) const { return m_Name; }	
+	
+	void AddTexture(const SPtr<Texture>& tex) { m_Textures.emplace_back(tex); }
 
 private:
 	void LoadTextures(const aiMaterial* material, Model& model, Texture::Type type);
 
 	std::string m_Shader;
-	std::vector<SPtr<Texture>> m_Textures;
+	std::string m_Name;
+	TextureList m_Textures;
 };
 
 

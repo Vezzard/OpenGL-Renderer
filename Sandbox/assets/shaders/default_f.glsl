@@ -4,6 +4,7 @@ out vec4 color;
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
+	sampler2D normal;
     float shininess;
 }; 
 
@@ -48,21 +49,33 @@ struct SpotLight {
 in vec3 v_FragPos;
 in vec3 v_Normal;
 in vec2 v_TexCoord;
+in mat3 v_TBN;
 
 uniform vec3		u_viewPos;
 uniform DirLight	u_dirLight;
 uniform PointLight	u_pointLights[NR_POINT_LIGHTS];
 uniform SpotLight	u_spotLights[NR_SPOT_LIGHTS];
 uniform Material	u_material;
+uniform int			u_normalMapping;
+uniform int			u_dbgDisableNormalMapping;
 
-vec3 CalcDirLight(DirLight light, vec3 v_Normal, vec3 viewDir);
-vec3 CalcPointLight(PointLight light, vec3 v_Normal, vec3 v_FragPos, vec3 viewDir);
-vec3 CalcSpotLight(SpotLight light, vec3 v_Normal, vec3 v_FragPos, vec3 viewDir);
+vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
+vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
+vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
 void main()
 {    
     // properties
-    vec3 norm = normalize(v_Normal);
+    vec3 norm;
+	bool nm = bool(u_normalMapping) && !bool(u_dbgDisableNormalMapping);
+	if (!nm) {
+		norm = normalize(v_Normal);
+	} else {
+		norm = texture(u_material.normal, v_TexCoord).rgb;
+		norm = normalize(norm * 2.f - 1.f);   
+		norm = normalize(v_TBN * norm);
+	}
+
     vec3 viewDir = normalize(u_viewPos - v_FragPos);
 
 	vec3 result = vec3(0.f, 0.f, 0.f);

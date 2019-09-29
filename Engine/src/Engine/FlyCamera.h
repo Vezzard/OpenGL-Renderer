@@ -29,7 +29,7 @@ public:
 
 private:
 	SPtr<Camera> m_Camera;
-	glm::mat4 m_Transform = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 14.f, 5.f));
+	glm::mat4 m_Transform = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 14.f, 10.f));
 };
 
 }

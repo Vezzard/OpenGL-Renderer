@@ -28,7 +28,6 @@ Model::Model(const aiScene* scene)
 	m_Textures.reserve(scene->mNumTextures);
 	for (uint i = 0; i < scene->mNumTextures; ++i) {
 		aiTexture* aiTex = scene->mTextures[i];
-		unsigned char* data = reinterpret_cast<unsigned char*>(aiTex->pcData);
 		auto& t = m_Textures.emplace_back(std::make_shared<Texture>(aiTex->mName));
 		t->Load();
 	}
@@ -40,6 +39,27 @@ Model::Model(const aiScene* scene)
 
 	m_Meshes.reserve(scene->mNumMeshes);
 	ProcessNode(scene->mRootNode, scene);
+}
+
+
+SPtr<Material> Model::GetMaterial(const std::string& name)
+{
+	for (auto& m : m_Materials) {
+		if (m->GetName() == name) {
+			return m;
+		}
+	}
+	ASSERT_FAIL("No material {0}", name);
+	return nullptr;
+}
+
+
+void Model::AddTexture(const std::string& matName, const std::string& texName, Texture::Type type)
+{
+	auto tex = std::make_shared<Engine::Scn::Texture>(texName);
+	tex->Load();
+	tex->SetType(type);
+	GetMaterial(matName)->AddTexture(tex);
 }
 
 
@@ -141,6 +161,7 @@ void Mesh::UploadUniforms(const SPtr<Shader>& shader) const
 {
 	shader->UploadUniformFloat("u_material.shininess", 32.f);
 
+	int normalMapping = 0;
 	for (const auto& t : m_Material->GetTextures()) {
 		switch (t->GetType())
 		{
@@ -152,8 +173,19 @@ void Mesh::UploadUniforms(const SPtr<Shader>& shader) const
 			shader->UploadUniformInt("u_material.specular", 1);
 			t->GetRenderTex()->Bind(1);
 			break;
+		case Texture::Type::Normal:
+			shader->UploadUniformInt("u_material.normal", 2);
+			t->GetRenderTex()->Bind(2);
+			normalMapping = 1;
+			break;
+		case Texture::Type::Bump:
+			shader->UploadUniformInt("u_material.normal", 2);
+			t->GetRenderTex()->Bind(2);
+			normalMapping = 1;
+			break;
 		}
 	}
+	shader->UploadUniformInt("u_normalMapping", normalMapping);
 }
 
 
@@ -171,10 +203,13 @@ void Mesh::GetIndecies(std::vector<uint>& indicies) const
 
 Material::Material(const aiMaterial* material, Model& model, const std::string& shader)
 	: m_Shader(shader)
+	, m_Name(material->mName)
 {
 	LoadTextures(material, model, Texture::Type::Ambient);
 	LoadTextures(material, model, Texture::Type::Diffuse);
 	LoadTextures(material, model, Texture::Type::Specular);
+	LoadTextures(material, model, Texture::Type::Normal);
+	LoadTextures(material, model, Texture::Type::Bump);
 }
 
 
@@ -203,6 +238,8 @@ aiTextureType Texture::ConvertType(Type type)
 	case Texture::Type::Ambient:  return aiTextureType_AMBIENT;  break;
 	case Texture::Type::Diffuse:  return aiTextureType_DIFFUSE;  break;
 	case Texture::Type::Specular: return aiTextureType_SPECULAR; break;
+	case Texture::Type::Normal:   return aiTextureType_NORMALS;  break;
+	case Texture::Type::Bump:     return aiTextureType_HEIGHT;	 break;
 	
 	default: ASSERT_FAIL("Unsupported type"); break;
 	}
