@@ -54,6 +54,7 @@ namespace Engine {
 
 	void Application::Run()
 	{
+		Input::Init();
 		while (m_Running)
 		{
 			float time = (float)glfwGetTime();
@@ -68,6 +69,7 @@ namespace Engine {
 				layer->OnImGuiRender();
 			m_ImGuiLayer->End();
 
+			Input::OnUpdate();
 			m_Window->OnUpdate();
 		}
 	}

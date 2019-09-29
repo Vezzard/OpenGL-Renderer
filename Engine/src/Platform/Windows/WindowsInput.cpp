@@ -8,6 +8,22 @@ namespace Engine {
 
 	Input* Input::s_Instance = new WindowsInput();
 
+	static WindowsInput& GetWinInstance(void) 
+	{ 
+		return *static_cast<WindowsInput*>(Input::GetInstance()); 
+	}
+
+	static void ScrollCB(GLFWwindow* window, double x, double y)
+	{
+		GetWinInstance().m_ScrollState = { x, y };
+	}
+
+	void WindowsInput::InitImpl(void)
+	{
+		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		glfwSetScrollCallback(window, ScrollCB);
+	}
+
 	bool WindowsInput::IsKeyPressedImpl(int keycode)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
@@ -22,7 +38,7 @@ namespace Engine {
 		return state == GLFW_PRESS;
 	}
 
-	std::pair<float, float> WindowsInput::GetMousePositionImpl()
+	Engine::Input::Position WindowsInput::GetMousePositionImpl(void)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		double xpos, ypos;
@@ -31,16 +47,26 @@ namespace Engine {
 		return { (float)xpos, (float)ypos };
 	}
 
-	float WindowsInput::GetMouseXImpl()
+	float WindowsInput::GetMouseXImpl(void)
 	{
 		auto[x, y] = GetMousePositionImpl();
 		return x;
 	}
 
-	float WindowsInput::GetMouseYImpl()
+	float WindowsInput::GetMouseYImpl(void)
 	{
 		auto[x, y] = GetMousePositionImpl();
 		return y;
+	}
+
+	Engine::Input::Position WindowsInput::GetScrollImpl(void)
+	{
+		return m_ScrollState;
+	}
+
+	void WindowsInput::OnUpdateImpl(void)
+	{
+		m_ScrollState = { 0.f, 0.f };
 	}
 
 }

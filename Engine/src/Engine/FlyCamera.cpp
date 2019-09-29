@@ -14,7 +14,7 @@ void FlyCamera::Update(Timestep ts)
 		return;
 	}
 
-	static std::pair<float, float> mousePos = { 0.f, 0.f };
+	static Input::Position mousePos = { 0.f, 0.f };
 
 	if (!moving) {
 		moving = true;
@@ -22,11 +22,13 @@ void FlyCamera::Update(Timestep ts)
 		return;
 	}
 
+	m_MoveSpeed += Input::GetScroll().second;
+	m_MoveSpeed = glm::clamp(m_MoveSpeed, 0.1f, 50.f);
+
 	static float yaw = -90.f;
 	static float pitch = 0.f;
 
 	const auto newMousePos = Input::GetMousePosition();
-
 	yaw   -= m_RotationSpeed * (mousePos.first - newMousePos.first);
 	pitch += m_RotationSpeed * (mousePos.second - newMousePos.second);
 

@@ -1,18 +1,24 @@
 #pragma once
 
 #include "Engine/Input.h"
+#include "GLFW/glfw3.h"
 
 namespace Engine {
 
 	class WindowsInput : public Input
 	{
-	protected:
-		virtual bool IsKeyPressedImpl(int keycode) override;
+	public:
+		Position m_ScrollState;
 
-		virtual bool IsMouseButtonPressedImpl(int button) override;
-		virtual std::pair<float, float> GetMousePositionImpl() override;
-		virtual float GetMouseXImpl() override;
-		virtual float GetMouseYImpl() override;
+	protected:
+		virtual bool		IsKeyPressedImpl		(int keycode) override;
+		virtual bool		IsMouseButtonPressedImpl(int button) override;
+		virtual Position	GetMousePositionImpl	(void) override;
+		virtual float		GetMouseXImpl			(void) override;
+		virtual float		GetMouseYImpl			(void) override;
+		virtual Position	GetScrollImpl			(void) override;
+		virtual void		OnUpdateImpl			(void) override;
+		virtual void		InitImpl(void) override;
 	};
 
 }
