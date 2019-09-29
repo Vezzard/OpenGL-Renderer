@@ -63,6 +63,14 @@ void Model::AddTexture(const std::string& matName, const std::string& texName, T
 }
 
 
+void Model::SetTransform(const glm::mat4& transform)
+{
+	m_Transform = transform;
+	for (auto& m : m_Meshes)
+		m->SetParentTransform(transform);
+}
+
+
 void Model::ProcessNode(const aiNode* node, const aiScene* scene)
 {
 	glm::mat4 transform;
@@ -279,15 +287,15 @@ Cube::Cube(const glm::mat4& transform, float scale /*= 1.f*/)
 	m_Faces = {
 		{ 0, 1, 3 },
 		{ 1, 2, 3 },
-		{ 1, 2, 5 },
+		{ 1, 5, 2 },
 		{ 1, 4, 5 },
 		{ 6, 5, 4 },
-		{ 6, 7, 4 },
+		{ 6, 4, 7 },
 		{ 0, 3, 6 },
-		{ 0, 7, 6 },
+		{ 0, 6, 7 },
 		{ 3, 2, 5 },
-		{ 3, 6, 5 },
-		{ 0, 1, 4 },
+		{ 3, 5, 6 },
+		{ 0, 4, 1 },
 		{ 0, 7, 4 }
 	};
 

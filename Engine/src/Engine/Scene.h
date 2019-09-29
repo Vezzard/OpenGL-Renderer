@@ -41,12 +41,11 @@ protected:
 	virtual void			UploadUniforms	(const SPtr<Shader>& shader) const;
 	void					SetupRenderable	(void);
 	
-	glm::mat4 m_WorldTransform = glm::mat4(1.f);
+	glm::mat4			m_WorldTransform = glm::mat4(1.f);
 	std::vector<Vertex> m_Verts;
 	std::vector<Face>	m_Faces;
 
 private:
-
 	std::string			m_Name;
 	glm::mat4			m_LocalTransform = glm::mat4(1.f);
 	SPtr<Material>		m_Material;
@@ -90,12 +89,14 @@ class Model
 public:
 	Model(const aiScene* scene);
 
-	SPtr<Texture> GetTexture	(uint idx)						{ return m_Textures[idx]; }
-	void	      Render		(void)							{ for (auto& m : m_Meshes) m->Render(); }
-	void	      Render		(const SPtr<Shader>& shader)	{ for (auto& m : m_Meshes) m->Render(shader); }
+	SPtr<Texture>	GetTexture		(uint idx)						{ return m_Textures[idx]; }
+	void			Render			(void)							{ for (auto& m : m_Meshes) m->Render(); }
+	void			Render			(const SPtr<Shader>& shader)	{ for (auto& m : m_Meshes) m->Render(shader); }
 
-	SPtr<Material>	GetMaterial	(const std::string& name);
-	void			AddTexture	(const std::string& matName, const std::string& texName, Texture::Type type);
+	SPtr<Material>	GetMaterial		(const std::string& name);
+	void			AddTexture		(const std::string& matName, const std::string& texName, Texture::Type type);
+
+	void			SetTransform	(const glm::mat4& transform);
 
 private:
 	void ProcessNode(const aiNode* node, const aiScene* scene);

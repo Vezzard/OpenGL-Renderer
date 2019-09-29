@@ -89,6 +89,14 @@ public:
 		m_DefaultShader->Bind();
 		m_DefaultShader->UploadUniformsDefaultLighting(m_ScnLight, m_Camera.GetPosition());
 		m_DefaultShader->UploadUniformInt("u_dbgDisableNormalMapping", m_DbgDisableNormalMapping ? 1 : 0);
+
+		m_Model->SetTransform(glm::translate(glm::mat4(1.f), glm::vec3(5.f, 0.f, -4.f)));
+		m_Model->Render(m_DefaultShader);
+
+		m_Model->SetTransform(glm::translate(glm::mat4(1.f), glm::vec3(-5.f, 0.f, -4.f)));
+		m_Model->Render(m_DefaultShader);
+
+		m_Model->SetTransform(glm::mat4(1.f));
 		m_Model->Render(m_DefaultShader);
 
 		for (const auto& ls : m_LightSources)
