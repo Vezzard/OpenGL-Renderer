@@ -26,7 +26,7 @@ public:
 		: Layer("Example")
 	{
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile("D:/Projects/Engine/versions/1.3/Sandbox/assets/models/nanosuit/scene.fbx", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+		const aiScene* scene = importer.ReadFile("D:/Projects/Git/Engine/Sandbox/assets/models/nanosuit/scene.fbx", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 		ASSERT(scene);
 		m_Model = std::make_shared<Engine::Scn::Model>(scene);
 		m_Model->AddTexture("Body", "body_showroom_ddn.png", Engine::Scn::Texture::Type::Bump);
