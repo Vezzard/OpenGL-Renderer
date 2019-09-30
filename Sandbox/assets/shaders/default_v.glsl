@@ -9,8 +9,6 @@ layout(location = 4) in vec2 a_UV;
 uniform mat4 u_ViewProjection;
 uniform mat4 u_Transform;
 
-uniform int u_dbg;
-
 out vec2 v_TexCoord;
 out vec3 v_FragPos;
 out vec3 v_Normal;

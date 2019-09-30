@@ -23,35 +23,6 @@ class Light;
 //class Animation;
 //class CameraSpot;
 
-class Mesh
-{
-public:
-	Mesh(void) {};
-	Mesh(const aiMesh* mesh, const glm::mat4& transform, const glm::mat4& parentTransform, const SPtr<Material>& material);
-
-	void SetParentTransform(const glm::mat4& transform) { m_WorldTransform = transform * m_LocalTransform; }
-
-	void Render(void) const;
-	void Render(const SPtr<Engine::Shader>& shader) const;
-	
-	void GetIndecies(std::vector<uint>& indicies) const;
-
-protected:
-	virtual BufferLayout	GetVboLayout	(void) const;
-	virtual void			UploadUniforms	(const SPtr<Shader>& shader) const;
-	void					SetupRenderable	(void);
-	
-	glm::mat4			m_WorldTransform = glm::mat4(1.f);
-	std::vector<Vertex> m_Verts;
-	std::vector<Face>	m_Faces;
-
-private:
-	std::string			m_Name;
-	glm::mat4			m_LocalTransform = glm::mat4(1.f);
-	SPtr<Material>		m_Material;
-	SPtr<VertexArray>	m_VAO;
-};
-
 
 class Texture
 {
@@ -67,6 +38,9 @@ public:
 
 	Texture(const std::string& name)
 		: m_Name(name) { }
+
+	Texture(const SPtr<Texture2D>& tex)
+		: m_RenderTex(tex) { }
 
 	static aiTextureType	ConvertType(Type type);
 	bool					IsLoaded(void) const { return m_RenderTex.get(); }
@@ -84,6 +58,38 @@ private:
 };
 
 
+class Mesh
+{
+public:
+	Mesh(void) {};
+	Mesh(const aiMesh* mesh, const glm::mat4& transform, const glm::mat4& parentTransform, const SPtr<Material>& material);
+
+	void SetParentTransform(const glm::mat4& transform) { m_WorldTransform = transform * m_LocalTransform; }
+
+	void Render(void) const;
+	void Render(const SPtr<Engine::Shader>& shader) const;
+	
+	void GetIndecies(std::vector<uint>& indicies) const;
+
+	SPtr<Texture> AddTexture(const SPtr<Texture2D>& tex, Texture::Type type);
+
+protected:
+	virtual BufferLayout	GetVboLayout	(void) const;
+	virtual void			UploadUniforms	(const SPtr<Shader>& shader) const;
+	void					SetupRenderable	(void);
+	
+	glm::mat4			m_WorldTransform = glm::mat4(1.f);
+	std::vector<Vertex> m_Verts;
+	std::vector<Face>	m_Faces;
+
+private:
+	std::string			m_Name;
+	glm::mat4			m_LocalTransform = glm::mat4(1.f);
+	SPtr<Material>		m_Material       = std::make_shared<Material>();
+	SPtr<VertexArray>	m_VAO;
+};
+
+
 class Model
 {
 public:
@@ -94,7 +100,8 @@ public:
 	void			Render			(const SPtr<Shader>& shader)	{ for (auto& m : m_Meshes) m->Render(shader); }
 
 	SPtr<Material>	GetMaterial		(const std::string& name);
-	void			AddTexture		(const std::string& matName, const std::string& texName, Texture::Type type);
+	SPtr<Texture>	AddTexture		(const std::string& matName, const std::string& texName, Texture::Type type);
+	SPtr<Texture>	AddTexture		(const std::string& matName, const SPtr<Texture>& tex, Texture::Type type);
 
 	void			SetTransform	(const glm::mat4& transform);
 
@@ -114,6 +121,7 @@ class Material
 public:
 	using TextureList = std::vector<SPtr<Texture>>;
 
+	Material(void) : m_Shader("default"), m_Name("Material") { }
 	Material(const aiMaterial* material, Model& model, const std::string& shader = "default");
 
 	const TextureList& GetTextures	(void) const { return m_Textures; }
@@ -156,15 +164,40 @@ struct Face
 };
 
 
-class Cube : public Mesh
+class PrimitiveMesh : public Mesh
 {
 public:
-	Cube(const glm::mat4& transform, float scale = 1.f);
-
-	void SetTransform(const glm::mat4& transform) { m_WorldTransform = transform; } 
+	void Init(const glm::mat4& transform, float scale = 1.f);
+	
+	void SetTransform(const glm::mat4& transform) { m_WorldTransform = transform; }
 
 protected:
-	virtual void UploadUniforms(const SPtr<Shader>& shader) const override {}
+	virtual void UploadUniforms	(const SPtr<Shader>& shader) const override {}
+	virtual void FillVerticies	(void) = 0;
+	virtual void FillIndicies	(void) = 0;
+};
+
+
+class Cube : public PrimitiveMesh
+{
+public:
+	Cube(const glm::mat4& transform, float scale = 1.f) { Init(transform, scale); }
+
+protected:
+	virtual void FillVerticies	(void) override;
+	virtual void FillIndicies	(void) override;
+};
+
+
+class Quad : public PrimitiveMesh
+{
+public:
+	Quad(const glm::mat4& transform, float scale = 1.f) { Init(transform, scale); }
+
+protected:
+	virtual void FillVerticies	(void) override;
+	virtual void FillIndicies	(void) override;
+	virtual void UploadUniforms	(const SPtr<Shader>& shader) const override { Mesh::UploadUniforms(shader); }
 };
 
 

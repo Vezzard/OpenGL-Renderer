@@ -17,6 +17,8 @@
 #include "Engine/Lighting.h"
 #include "Engine/Core/Math.h"
 
+#include "Glad/include/glad/glad.h"
+
 class ExampleLayer : public Engine::Layer
 {
 public:
@@ -32,6 +34,7 @@ public:
 		
 		m_Camera.SetPerspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f);
 
+		m_ScreenShader.reset(Engine::Shader::Create("assets/shaders/default_screen_v.glsl", "assets/shaders/default_screen_f.glsl"));
 		m_DefaultShader.reset(Engine::Shader::Create("assets/shaders/default_v.glsl", "assets/shaders/default_f.glsl"));
 		m_LightSourceShader.reset(Engine::Shader::Create("assets/shaders/flat_color_v.glsl", "assets/shaders/flat_color_f.glsl"));
 		m_LightSourceShader->Bind();
@@ -69,7 +72,56 @@ public:
 
 		for (const auto& l : m_ScnLight.pointLights)
 			m_LightSources.emplace_back(std::make_shared<Engine::Scn::Cube>(glm::translate(glm::mat4(1.f), l.position), 0.1f));
+
+
+		//@TODO: move to renderer
+		//create framebuffer
+		glGenFramebuffers(1, &fb);
+		glBindFramebuffer(GL_FRAMEBUFFER, fb);
+
+		// create texture
+// 		unsigned int texBuff;
+// 		glCreateTextures(GL_TEXTURE_2D, 1, &texBuff);
+// 		glTextureStorage2D(texBuff, 1, GL_RGB8, screenWidth, screenHeight);
+// 
+// 		glTextureParameteri(texBuff, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+// 		glTextureParameteri(texBuff, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+// 
+// 		glTextureSubImage2D(texBuff, 0, 0, 0, screenWidth, screenHeight, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+// 		glBindTextureUnit(0, texBuff);
+
+// 		glGenTextures(1, &texColorBuffer);
+// 		glBindTexture(GL_TEXTURE_2D, texColorBuffer);
+// 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+// 		glBindTexture(GL_TEXTURE_2D, 0);
+
+		auto tex2d = Engine::Texture2D::Create(nullptr, screenWidth, screenHeight, 3);
+		auto tex = m_ScreenQuad->AddTexture(tex2d, Engine::Scn::Texture::Type::Diffuse);
+
+		// bind texture to framebuffer
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex->GetRenderTex()->GetRenderId(), 0);
+
+		// create renderbuffer and bind to framebuffer
+		unsigned int rbo;
+		glGenRenderbuffers(1, &rbo);
+		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
+		// unbind!
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+			ASSERT_FAIL("Error");
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
+
+	unsigned int fb;
 
 	void OnUpdate(Engine::Timestep ts) override
 	{
@@ -81,6 +133,11 @@ public:
 		m_LightSources[0]->SetTransform(glm::translate(glm::mat4(1.f), m_ScnLight.pointLights[0].position));
 
 		Engine::Renderer::BeginScene(m_Camera.GetRenderCamera());
+		//@TODO: move to renderer
+		glBindFramebuffer(GL_FRAMEBUFFER, fb);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
 
 		auto& sl = m_ScnLight.spotLights[0];
 		sl.position = m_Camera.GetPosition();
@@ -102,10 +159,23 @@ public:
 		for (const auto& ls : m_LightSources)
 			ls->Render(m_LightSourceShader);
 
+
+		//@TODO: move to renderer
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClearColor(1.f, 1.f, 1.f, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		m_ScreenShader->Bind();
+		m_ScreenShader->UploadUniformFloat("u_dbgPPOffset", m_DbgPPOffset);
+		m_ScreenShader->UploadUniformInt("u_dbgPPEffect", m_DbgPPEffect);
+		m_ScreenQuad->Render(m_ScreenShader);
+
 		Engine::Renderer::EndScene();
 	}
 
 	bool m_DbgDisableNormalMapping = false;
+	float m_DbgPPOffset = 0.003f;
+	int m_DbgPPEffect = 0;
 
 	virtual void OnImGuiRender() override
 	{
@@ -137,6 +207,9 @@ public:
 
 		ImGui::Checkbox("Disable normal mapping",	&m_DbgDisableNormalMapping);
 
+		ImGui::SliderFloat("Post proc offset",		&m_DbgPPOffset, 0.f, 0.01f);
+		ImGui::SliderInt("Post proc effect",		&m_DbgPPEffect, 0, 3);
+
 		ImGui::End();
 	}
 
@@ -149,8 +222,11 @@ private:
 
 	std::vector<Engine::SPtr<Engine::Scn::Cube>> m_LightSources;
 
+	Engine::SPtr<Engine::Scn::Quad> m_ScreenQuad = std::make_shared<Engine::Scn::Quad>(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 0.f)));
+
 	Engine::SPtr<Engine::Shader> m_DefaultShader;
 	Engine::SPtr<Engine::Shader> m_LightSourceShader;
+	Engine::SPtr<Engine::Shader> m_ScreenShader;
 
 	Engine::FlyCamera m_Camera;
 };

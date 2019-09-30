@@ -54,14 +54,20 @@ SPtr<Material> Model::GetMaterial(const std::string& name)
 }
 
 
-void Model::AddTexture(const std::string& matName, const std::string& texName, Texture::Type type)
+SPtr<Texture> Model::AddTexture(const std::string& matName, const std::string& texName, Texture::Type type)
 {
 	auto tex = std::make_shared<Engine::Scn::Texture>(texName);
 	tex->Load();
-	tex->SetType(type);
-	GetMaterial(matName)->AddTexture(tex);
+	return AddTexture(matName, tex, type);
 }
 
+
+SPtr<Texture> Model::AddTexture(const std::string& matName, const SPtr<Texture>& tex, Texture::Type type)
+{
+	tex->SetType(type);
+	GetMaterial(matName)->AddTexture(tex);
+	return tex;
+}
 
 void Model::SetTransform(const glm::mat4& transform)
 {
@@ -209,6 +215,14 @@ void Mesh::GetIndecies(std::vector<uint>& indicies) const
 }
 
 
+Engine::SPtr<Texture> Mesh::AddTexture(const SPtr<Texture2D>& tex, Texture::Type type)
+{
+	auto texture = std::make_shared<Texture>(tex);
+	texture->SetType(type);
+	m_Material->AddTexture(texture);
+	return texture;
+}
+
 Material::Material(const aiMaterial* material, Model& model, const std::string& shader)
 	: m_Shader(shader)
 	, m_Name(material->mName)
@@ -264,26 +278,39 @@ void Texture::Load(void)
 }
 
 
-Cube::Cube(const glm::mat4& transform, float scale /*= 1.f*/)
+void PrimitiveMesh::Init(const glm::mat4& transform, float scale /*= 1.f*/)
 {
 	SetTransform(transform);
 
-	glm::vec3 v3(0.f);
-	glm::vec2 v2(0.f);
-	m_Verts = {  
-		{ { -1.f, -1.f,  1.f }, v3, v3, v3, v2 }, //0
-		{ {  1.f, -1.f,  1.f }, v3, v3, v3, v2 }, //1
-		{ {  1.f,  1.f,  1.f }, v3, v3, v3, v2 }, //2
-		{ { -1.f,  1.f,  1.f }, v3, v3, v3, v2 }, //3
-		{ {  1.f, -1.f, -1.f }, v3, v3, v3, v2 }, //4
-		{ {  1.f,  1.f, -1.f }, v3, v3, v3, v2 }, //5
-		{ { -1.f,  1.f, -1.f }, v3, v3, v3, v2 }, //6
-		{ { -1.f, -1.f, -1.f }, v3, v3, v3, v2 }  //7
-	};
-
+	FillVerticies();
 	for (auto& v : m_Verts)
 		v.position *= scale;
 
+	FillIndicies();
+
+	SetupRenderable();
+}
+
+
+void Cube::FillVerticies(void)
+{
+	glm::vec3 v3(0.f);
+	glm::vec2 v2(0.f);
+	m_Verts = {
+		{ { -1.f, -1.f,  1.f }, v3, v3, v3, v2 },
+		{ {  1.f, -1.f,  1.f }, v3, v3, v3, v2 },
+		{ {  1.f,  1.f,  1.f }, v3, v3, v3, v2 },
+		{ { -1.f,  1.f,  1.f }, v3, v3, v3, v2 },
+		{ {  1.f, -1.f, -1.f }, v3, v3, v3, v2 },
+		{ {  1.f,  1.f, -1.f }, v3, v3, v3, v2 },
+		{ { -1.f,  1.f, -1.f }, v3, v3, v3, v2 },
+		{ { -1.f, -1.f, -1.f }, v3, v3, v3, v2 },
+	};
+}
+
+
+void Cube::FillIndicies(void)
+{
 	m_Faces = {
 		{ 0, 1, 3 },
 		{ 1, 2, 3 },
@@ -298,9 +325,28 @@ Cube::Cube(const glm::mat4& transform, float scale /*= 1.f*/)
 		{ 0, 4, 1 },
 		{ 0, 7, 4 }
 	};
-
-	SetupRenderable();
 }
+
+
+void Quad::FillVerticies(void)
+{
+	glm::vec3 v3(0.f);
+	m_Verts = {
+		{ { -1.f, -1.f,  0.f }, v3, v3, v3, { 0, 0 } },
+		{ {  1.f, -1.f,  0.f }, v3, v3, v3, { 1, 0 } },
+		{ {  1.f,  1.f,  0.f }, v3, v3, v3, { 1, 1 } },
+		{ { -1.f,  1.f,  0.f }, v3, v3, v3, { 0, 1 } },
+	};
+}
+
+void Quad::FillIndicies(void)
+{
+	m_Faces = {
+		{ 0, 1, 2 },
+		{ 2, 3, 0 }
+	};
+}
+
 
 }
 }

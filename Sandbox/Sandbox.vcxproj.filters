@@ -21,5 +21,11 @@
     <None Include="assets\shaders\flat_color_f.glsl">
       <Filter>shaders</Filter>
     </None>
+    <None Include="assets\shaders\default_screen_f.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="assets\shaders\default_screen_v.glsl">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
