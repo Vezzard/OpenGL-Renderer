@@ -1,4 +1,5 @@
 #pragma once
+#include "Texture.h"
 
 namespace Engine {
 
@@ -139,5 +140,36 @@ public:
 
 	static IndexBuffer* Create(uint32_t* indices, uint32_t size);
 };
+
+class RenderBuffer;
+
+class FrameBuffer
+{
+public:
+   virtual ~FrameBuffer() = default;
+
+   virtual void Bind() const = 0;
+   virtual void Unbind() const = 0;
+
+   virtual void AddTexture(const SPtr<Texture>& texture) = 0;
+   virtual void AddRenderBuffer(const SPtr<RenderBuffer>& rb) = 0;
+
+   virtual bool Check() const = 0;
+
+   static FrameBuffer* Create();
+};
+
+
+class RenderBuffer
+{
+public:
+   virtual ~RenderBuffer() = default;
+
+   virtual void Bind() const = 0;
+   virtual void Unbind() const = 0;
+
+   static RenderBuffer* Create(uint windth, uint heigth);
+};
+
 
 }

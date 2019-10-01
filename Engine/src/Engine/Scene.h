@@ -64,6 +64,8 @@ public:
 	Mesh(void) {};
 	Mesh(const aiMesh* mesh, const glm::mat4& transform, const glm::mat4& parentTransform, const SPtr<Material>& material);
 
+   virtual ~Mesh() = default;
+
 	void SetParentTransform(const glm::mat4& transform) { m_WorldTransform = transform * m_LocalTransform; }
 
 	void Render(void) const;

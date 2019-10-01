@@ -38,4 +38,42 @@ namespace Engine {
 		uint32_t m_Count;
 	};
 
+
+   class OpenGLFrameBuffer : public FrameBuffer
+   {
+   public:
+      OpenGLFrameBuffer();
+      virtual ~OpenGLFrameBuffer();
+
+      virtual void Bind() const override;
+      virtual void Unbind() const override;
+
+      virtual void AddTexture(const SPtr<Texture>& texture) override;
+      virtual void AddRenderBuffer(const SPtr<RenderBuffer>& rb) override;
+
+      virtual bool Check() const override;
+
+   private:
+      uint m_RendererID;
+      uint m_ColorTextureOffset = 0;
+
+      std::vector<SPtr<RenderBuffer>> m_RenderBuffers;
+   };
+
+
+   class OpenGLRenderBuffer : public RenderBuffer
+   {
+   public:
+      OpenGLRenderBuffer(uint windth, uint heigth);
+      virtual ~OpenGLRenderBuffer();
+
+      virtual void Bind() const override;
+      virtual void Unbind() const override;
+
+      uint GetRendererID() const { return m_RendererID; }
+
+   private:
+      uint m_RendererID;
+   };
+
 }

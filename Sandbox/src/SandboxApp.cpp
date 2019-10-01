@@ -26,7 +26,7 @@ public:
 		: Layer("Example")
 	{
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile("D:/Projects/Git/Engine/Sandbox/assets/models/nanosuit/scene.fbx", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+		const aiScene* scene = importer.ReadFile("D:/tmp/tmpPrj/Project/Sandbox/assets/models/nanosuit/scene.fbx", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 		ASSERT(scene);
 		m_Model = std::make_shared<Engine::Scn::Model>(scene);
 		m_Model->AddTexture("Body", "body_showroom_ddn.png", Engine::Scn::Texture::Type::Bump);
@@ -73,52 +73,20 @@ public:
 		for (const auto& l : m_ScnLight.pointLights)
 			m_LightSources.emplace_back(std::make_shared<Engine::Scn::Cube>(glm::translate(glm::mat4(1.f), l.position), 0.1f));
 
-
-		//@TODO: move to renderer
-		//create framebuffer
-		glGenFramebuffers(1, &fb);
-		glBindFramebuffer(GL_FRAMEBUFFER, fb);
-
-		// create texture
-// 		unsigned int texBuff;
-// 		glCreateTextures(GL_TEXTURE_2D, 1, &texBuff);
-// 		glTextureStorage2D(texBuff, 1, GL_RGB8, screenWidth, screenHeight);
-// 
-// 		glTextureParameteri(texBuff, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-// 		glTextureParameteri(texBuff, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-// 
-// 		glTextureSubImage2D(texBuff, 0, 0, 0, screenWidth, screenHeight, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-// 		glBindTextureUnit(0, texBuff);
-
-// 		glGenTextures(1, &texColorBuffer);
-// 		glBindTexture(GL_TEXTURE_2D, texColorBuffer);
-// 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-// 		glBindTexture(GL_TEXTURE_2D, 0);
+      m_ScreenFrameBuffer.reset(Engine::FrameBuffer::Create());
+      m_ScreenFrameBuffer->Bind();
 
 		auto tex2d = Engine::Texture2D::Create(nullptr, screenWidth, screenHeight, 3);
 		auto tex = m_ScreenQuad->AddTexture(tex2d, Engine::Scn::Texture::Type::Diffuse);
 
-		// bind texture to framebuffer
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex->GetRenderTex()->GetRenderId(), 0);
+      m_ScreenFrameBuffer->AddTexture(tex->GetRenderTex());
 
-		// create renderbuffer and bind to framebuffer
-		unsigned int rbo;
-		glGenRenderbuffers(1, &rbo);
-		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
-		// unbind!
-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+      Engine::SPtr<Engine::RenderBuffer> renderBuffer;
+      renderBuffer.reset(Engine::RenderBuffer::Create(screenWidth, screenHeight));
+      m_ScreenFrameBuffer->AddRenderBuffer(renderBuffer);
 
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-			ASSERT_FAIL("Error");
-		}
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      m_ScreenFrameBuffer->Check();
+      m_ScreenFrameBuffer->Unbind();
 	}
 
 	unsigned int fb;
@@ -133,11 +101,10 @@ public:
 		m_LightSources[0]->SetTransform(glm::translate(glm::mat4(1.f), m_ScnLight.pointLights[0].position));
 
 		Engine::Renderer::BeginScene(m_Camera.GetRenderCamera());
-		//@TODO: move to renderer
-		glBindFramebuffer(GL_FRAMEBUFFER, fb);
-		glClearColor(0.1f, 0.1f, 0.1f, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);
+
+      m_ScreenFrameBuffer->Bind();
+      Engine::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.f });
+      Engine::RenderCommand::Clear();
 
 		auto& sl = m_ScnLight.spotLights[0];
 		sl.position = m_Camera.GetPosition();
@@ -159,11 +126,9 @@ public:
 		for (const auto& ls : m_LightSources)
 			ls->Render(m_LightSourceShader);
 
-
-		//@TODO: move to renderer
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClearColor(1.f, 1.f, 1.f, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT);
+      m_ScreenFrameBuffer->Unbind();
+      Engine::RenderCommand::SetClearColor({ 1.f, 1.f, 1.f, 1.f });
+      Engine::RenderCommand::Clear();
 
 		m_ScreenShader->Bind();
 		m_ScreenShader->UploadUniformFloat("u_dbgPPOffset", m_DbgPPOffset);
@@ -227,6 +192,8 @@ private:
 	Engine::SPtr<Engine::Shader> m_DefaultShader;
 	Engine::SPtr<Engine::Shader> m_LightSourceShader;
 	Engine::SPtr<Engine::Shader> m_ScreenShader;
+
+   Engine::SPtr<Engine::FrameBuffer> m_ScreenFrameBuffer;
 
 	Engine::FlyCamera m_Camera;
 };

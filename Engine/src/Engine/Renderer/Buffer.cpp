@@ -31,4 +31,28 @@ IndexBuffer* IndexBuffer::Create(uint32_t* indices, uint32_t size)
 	return nullptr;
 }
 
+Engine::FrameBuffer* FrameBuffer::Create()
+{
+   switch (Renderer::GetAPI())
+   {
+   case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+   case RendererAPI::API::OpenGL:  return new OpenGLFrameBuffer();
+   }
+
+   CORE_ASSERT(false, "Unknown RendererAPI!");
+   return nullptr;
+}
+
+Engine::RenderBuffer* RenderBuffer::Create(uint windth, uint heigth)
+{
+   switch (Renderer::GetAPI())
+   {
+   case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+   case RendererAPI::API::OpenGL:  return new OpenGLRenderBuffer(windth, heigth);
+   }
+
+   CORE_ASSERT(false, "Unknown RendererAPI!");
+   return nullptr;
+}
+
 }
