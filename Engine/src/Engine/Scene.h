@@ -7,9 +7,6 @@
 #include "Renderer/Shader.h"
 #include "Renderer/Texture.h"
 
-
-extern Engine::SPtr<Engine::Texture2D> GlobalTexture;
-
 namespace Engine {
 namespace Scn {
 
@@ -42,13 +39,13 @@ public:
 	Texture(const SPtr<Texture2D>& tex)
 		: m_RenderTex(tex) { }
 
-	static aiTextureType	ConvertType(Type type);
-	bool					IsLoaded(void) const { return m_RenderTex.get(); }
-	void					Load(void);
-	const std::string&		GetName(void) const { return m_Name; }
-	void					SetType(Type type) { m_Type = type; }
-	Type					GetType(void) const { return m_Type; }
-	SPtr<Texture2D>			GetRenderTex(void) { return m_RenderTex; }
+	static aiTextureType	ConvertType    (Type type);
+	bool					   IsLoaded       (void) const   { return m_RenderTex.get(); }
+	void					   Load           (void);
+	const std::string&	GetName        (void) const   { return m_Name; }
+	void					   SetType        (Type type)    { m_Type = type; }
+	Type					   GetType        (void) const   { return m_Type; }
+	SPtr<Texture2D>		GetRenderTex   (void)         { return m_RenderTex; }
 
 private:
 	Type m_Type = Type::None;

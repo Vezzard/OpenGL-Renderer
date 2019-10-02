@@ -16,8 +16,9 @@
 #include "Engine/Scene.h"
 #include "Engine/Lighting.h"
 #include "Engine/Core/Math.h"
+#include "Engine/Renderer/ShaderManager.h"
 
-#include "Glad/include/glad/glad.h"
+//#include "Glad/include/glad/glad.h"
 
 class ExampleLayer : public Engine::Layer
 {
@@ -26,25 +27,25 @@ public:
 		: Layer("Example")
 	{
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile("D:/tmp/tmpPrj/Project/Sandbox/assets/models/nanosuit/scene.fbx", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-		ASSERT(scene);
+		const aiScene* scene = importer.ReadFile("D:/Projects/Git/Engine/Sandbox/assets/models/nanosuit/scene.fbx", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+		ASSERT(scene, "Model loading failed");
 		m_Model = std::make_shared<Engine::Scn::Model>(scene);
 		m_Model->AddTexture("Body", "body_showroom_ddn.png", Engine::Scn::Texture::Type::Bump);
 		m_Model->AddTexture("Arm", "arm_showroom_ddn.png", Engine::Scn::Texture::Type::Bump);
 		
-		m_Camera.SetPerspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f);
+      m_Camera.SetPerspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f);
 
-		m_ScreenShader.reset(Engine::Shader::Create("assets/shaders/default_screen_v.glsl", "assets/shaders/default_screen_f.glsl"));
-		m_DefaultShader.reset(Engine::Shader::Create("assets/shaders/default_v.glsl", "assets/shaders/default_f.glsl"));
-		m_LightSourceShader.reset(Engine::Shader::Create("assets/shaders/flat_color_v.glsl", "assets/shaders/flat_color_f.glsl"));
-		m_LightSourceShader->Bind();
-		m_LightSourceShader->UploadUniformFloat3("u_Color", glm::vec3(1.f, 1.f, 1.f));
+      Engine::ShaderManager::Get(m_ScreenShader);
+      Engine::ShaderManager::Get(m_DefaultShader);
+		auto lightShader = Engine::ShaderManager::Get(m_LightSourceShader);
+      lightShader->Bind();
+		lightShader->UploadUniformFloat3("u_Color", glm::vec3(1.f, 1.f, 1.f));
 
 		m_ScnLight.pointLights.emplace_back();
 		m_ScnLight.spotLights.emplace_back();
 		
 		auto& dl = m_ScnLight.dirLight;
-		dl.direction    = glm::vec3(-0.2f, -1.0f, -0.3f);
+		dl.direction   = glm::vec3(-0.2f, -1.0f, -0.3f);
 		dl.ambient		= glm::vec3(0.05f, 0.05f, 0.05f);
 		dl.diffuse		= glm::vec3(0.4f, 0.4f, 0.4f);
 		dl.specular		= glm::vec3(0.5f, 0.5f, 0.5f);
@@ -110,30 +111,33 @@ public:
 		sl.position = m_Camera.GetPosition();
 		Math::matGetForward(m_Camera.GetTransform(), sl.direction);
 
-		m_DefaultShader->Bind();
-		m_DefaultShader->UploadUniformsDefaultLighting(m_ScnLight, m_Camera.GetPosition());
-		m_DefaultShader->UploadUniformInt("u_dbgDisableNormalMapping", m_DbgDisableNormalMapping ? 1 : 0);
+      auto defaultShader = Engine::ShaderManager::Get(m_DefaultShader);
+		defaultShader->Bind();
+		defaultShader->UploadUniformsDefaultLighting(m_ScnLight, m_Camera.GetPosition());
+		defaultShader->UploadUniformInt("u_dbgDisableNormalMapping", m_DbgDisableNormalMapping ? 1 : 0);
 
 		m_Model->SetTransform(glm::translate(glm::mat4(1.f), glm::vec3(5.f, 0.f, -4.f)));
-		m_Model->Render(m_DefaultShader);
+		m_Model->Render(defaultShader);
 
 		m_Model->SetTransform(glm::translate(glm::mat4(1.f), glm::vec3(-5.f, 0.f, -4.f)));
-		m_Model->Render(m_DefaultShader);
+		m_Model->Render(defaultShader);
 
 		m_Model->SetTransform(glm::mat4(1.f));
-		m_Model->Render(m_DefaultShader);
+		m_Model->Render(defaultShader);
 
+      auto lightShader = Engine::ShaderManager::Get(m_LightSourceShader);
 		for (const auto& ls : m_LightSources)
-			ls->Render(m_LightSourceShader);
+			ls->Render(lightShader);
 
       m_ScreenFrameBuffer->Unbind();
       Engine::RenderCommand::SetClearColor({ 1.f, 1.f, 1.f, 1.f });
       Engine::RenderCommand::Clear();
 
-		m_ScreenShader->Bind();
-		m_ScreenShader->UploadUniformFloat("u_dbgPPOffset", m_DbgPPOffset);
-		m_ScreenShader->UploadUniformInt("u_dbgPPEffect", m_DbgPPEffect);
-		m_ScreenQuad->Render(m_ScreenShader);
+      auto screenShader = Engine::ShaderManager::Get(m_ScreenShader);
+		screenShader->Bind();
+		screenShader->UploadUniformFloat("u_dbgPPOffset", m_DbgPPOffset);
+		screenShader->UploadUniformInt("u_dbgPPEffect", m_DbgPPEffect);
+		m_ScreenQuad->Render(screenShader);
 
 		Engine::Renderer::EndScene();
 	}
@@ -187,11 +191,14 @@ private:
 
 	std::vector<Engine::SPtr<Engine::Scn::Cube>> m_LightSources;
 
+   Engine::SPtr<Engine::Scn::Cube> m_Skybox = std::make_shared<Engine::Scn::Cube>(glm::mat4(1.f), 20.f);
+
 	Engine::SPtr<Engine::Scn::Quad> m_ScreenQuad = std::make_shared<Engine::Scn::Quad>(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 0.f)));
 
-	Engine::SPtr<Engine::Shader> m_DefaultShader;
-	Engine::SPtr<Engine::Shader> m_LightSourceShader;
-	Engine::SPtr<Engine::Shader> m_ScreenShader;
+	std::string m_DefaultShader      = "default";
+	std::string m_LightSourceShader  = "flat_color";
+	std::string m_ScreenShader       = "default_screen";
+   std::string m_ScyboxShader       = "default_skybox";
 
    Engine::SPtr<Engine::FrameBuffer> m_ScreenFrameBuffer;
 

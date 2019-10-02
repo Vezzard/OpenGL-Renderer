@@ -927,6 +927,9 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\ShaderManager.h">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp">
@@ -1012,6 +1015,9 @@
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Renderer\ShaderManager.cpp">
+      <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

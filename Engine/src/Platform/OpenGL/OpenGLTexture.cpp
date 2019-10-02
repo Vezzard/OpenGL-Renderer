@@ -51,19 +51,51 @@ namespace Engine {
 		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-// 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-// 		glTextureStorage2D(m_RendererID, 1, internalFormat, m_Width, m_Height);
-// 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-// 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-// 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
 	}
 
 	void OpenGLTexture2D::Bind(uint32_t slot) const
 	{
 		glBindTextureUnit(slot, m_RendererID);
-// 		glActiveTexture(slot);
-// 		glBindTexture(GL_TEXTURE_2D, m_RendererID);
 	}
+
+   OpenGLCubeMap::OpenGLCubeMap(const std::vector<std::string>& paths)
+   {
+      ASSERT(paths.size() == 6);
+
+      glGenTextures(1, &m_RendererID);
+      glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
+
+      int width, height, channels;
+      for (uint i = 0; i < paths.size(); i++)
+      {
+         unsigned char *data = stbi_load(paths[i].c_str(), &width, &height, &channels, 0);
+         if (data)
+         {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+               0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+            );
+         }
+         else
+         {
+            ERROR_CORE("Cubemap texture failed to load at path: {0}", paths[i]);
+         }
+         stbi_image_free(data);
+      }
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+   }
+
+   OpenGLCubeMap::~OpenGLCubeMap()
+   {
+      glDeleteTextures(1, &m_RendererID);
+   }
+
+   void OpenGLCubeMap::Bind(uint32_t slot /*= 0*/) const
+   {
+      glBindTextureUnit(slot, m_RendererID);
+   }
 
 }

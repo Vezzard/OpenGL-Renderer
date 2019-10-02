@@ -11,17 +11,31 @@ namespace Engine {
 		OpenGLTexture2D(unsigned char* data, int width, int height, int channels) { Init(data, width, height, channels); } 
 		virtual ~OpenGLTexture2D();
 
-		virtual uint32_t		GetWidth	(void) const override { return m_Width;  }
-		virtual uint32_t		GetHeight	(void) const override { return m_Height; }
-
-		virtual void			Bind		(uint32_t slot = 0) const override;
-		virtual unsigned int	GetRenderId	(void) const override { return m_RendererID; };
+		virtual uint GetWidth	   (void) const override   { return m_Width;  }
+		virtual uint GetHeight     (void) const override   { return m_Height; }
+                   
+		virtual void Bind		      (uint32_t slot = 0) const override;
+		virtual uint GetRenderId	(void) const override   { return m_RendererID; };
 	private:
 		void Init(unsigned char* data, int width, int height, int channels);
 
 		std::string m_Path;
-		uint32_t m_Width, m_Height;
-		uint32_t m_RendererID;
+		uint m_Width, m_Height;
+		uint m_RendererID;
 	};
+
+
+   class OpenGLCubeMap : public CubeMap
+   {
+      OpenGLCubeMap(const std::vector<std::string>& paths);
+      virtual ~OpenGLCubeMap();
+      
+      virtual void Bind       (uint32_t slot = 0) const override;
+      virtual uint GetRenderId(void) const override { return m_RendererID; };
+
+   private:
+      uint m_Width, m_Height;
+      uint m_RendererID;
+   };
 
 }
