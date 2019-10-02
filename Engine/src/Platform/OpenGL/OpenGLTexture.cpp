@@ -65,6 +65,7 @@ namespace Engine {
       glGenTextures(1, &m_RendererID);
       glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
 
+      stbi_set_flip_vertically_on_load(0);
       int width, height, channels;
       for (uint i = 0; i < paths.size(); i++)
       {
@@ -95,7 +96,7 @@ namespace Engine {
 
    void OpenGLCubeMap::Bind(uint32_t slot /*= 0*/) const
    {
-      glBindTextureUnit(slot, m_RendererID);
+      glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
    }
 
 }

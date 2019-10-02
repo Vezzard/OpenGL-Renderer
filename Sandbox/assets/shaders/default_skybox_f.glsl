@@ -1,15 +1,11 @@
 #version 330 core
 out vec4 color;
 
-struct Material {
-    samplerCube diffuse;
-};
+in vec3 v_TexCoord;
 
-in vec2 v_TexCoord;
-
-uniform Material u_material;
+uniform samplerCube u_cube;
 
 void main()
 {   
-    color = texture(u_material.diffuse, v_TexCoord);
+    color = texture(u_cube, v_TexCoord);
 }

@@ -1,18 +1,19 @@
 #version 330 core
 			
 layout(location = 0) in vec3 a_Position;
-layout(location = 1) in vec3 a_Normal;
-layout(location = 2) in vec3 a_Tangent;
-layout(location = 3) in vec3 a_Bitangent;
-layout(location = 4) in vec2 a_UV;
 
 uniform mat4 u_ViewProjection;
-uniform mat4 u_Transform;
+uniform mat4 u_view;
+uniform mat4 u_projection;
 
-out vec2 v_TexCoord;
+out vec3 v_TexCoord;
 
 void main()
 {
-	gl_Position = vec4(a_Position.x, a_Position.y, 0.0, 1.0); 	
+	vec4 pos = u_projection * mat4(mat3(u_view)) * vec4(a_Position, 1.f);
+	pos = pos.xyww;
+	pos.z -= 0.000001f;
+	gl_Position = pos;
+
 	v_TexCoord = a_Position;
 }

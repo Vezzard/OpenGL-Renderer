@@ -31,14 +31,32 @@ public:
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile("D:/Projects/Git/Engine/Sandbox/assets/models/nanosuit/scene.fbx", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 		ASSERT(scene, "Model loading failed");
-		m_Model = std::make_shared<Scn::Model>(scene);
-		m_Model->AddTexture("Body", "body_showroom_ddn.png", Scn::Texture::Type::Bump);
-		m_Model->AddTexture("Arm", "arm_showroom_ddn.png", Scn::Texture::Type::Bump);
+      m_Model = std::make_shared<Scn::Model>(scene);
+      
+      auto bodyTex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("body_showroom_ddn.png"));
+      m_Model->AddTexture("Body", bodyTex, Scn::Texture::Type::Bump);
+      auto tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("arm_showroom_ddn.png"));
+      m_Model->AddTexture("Arm", tex, Scn::Texture::Type::Bump);
+      tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("arm_showroom_refl.png"));
+      m_Model->AddTexture("Arm", tex, Scn::Texture::Type::Reflection);
+      tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("body_showroom_refl.png"));
+      m_Model->AddTexture("Body", tex, Scn::Texture::Type::Reflection);
+      tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("hand_showroom_refl.png"));
+      m_Model->AddTexture("Hand", tex, Scn::Texture::Type::Reflection);
+      tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("helmet_showroom_refl.png"));
+      m_Model->AddTexture("Helmet", tex, Scn::Texture::Type::Reflection);
+      tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("leg_showroom_refl.png"));
+      m_Model->AddTexture("Leg", tex, Scn::Texture::Type::Reflection);
 		
       m_Camera.SetPerspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f);
 
+      auto cubeMap = AssetManager::GetCubemap("cube2");
+      m_Skybox->AddTexture(cubeMap, Scn::Texture::Type::Cubemap);
+      m_Model->BindCubemap(cubeMap);
+
       AssetManager::GetShader(m_ScreenShader);
       AssetManager::GetShader(m_DefaultShader);
+
 		auto lightShader = AssetManager::GetShader(m_LightSourceShader);
       lightShader->Bind();
 		lightShader->UploadUniformFloat3("u_Color", glm::vec3(1.f, 1.f, 1.f));
@@ -80,9 +98,9 @@ public:
       m_ScreenFrameBuffer->Bind();
 
 		auto tex2d = Texture2D::Create(nullptr, screenWidth, screenHeight, 3);
-		auto tex = m_ScreenQuad->AddTexture(tex2d, Scn::Texture::Type::Diffuse);
+		auto texture = m_ScreenQuad->AddTexture(tex2d, Scn::Texture::Type::Diffuse);
 
-      m_ScreenFrameBuffer->AddTexture(tex->GetRenderTex());
+      m_ScreenFrameBuffer->AddTexture(texture->GetRenderTex());
 
       SPtr<RenderBuffer> renderBuffer;
       renderBuffer.reset(RenderBuffer::Create(screenWidth, screenHeight));
@@ -103,7 +121,7 @@ public:
 
 		m_LightSources[0]->SetTransform(glm::translate(glm::mat4(1.f), m_ScnLight.pointLights[0].position));
 
-		Renderer::BeginScene(m_Camera.GetRenderCamera());
+      Renderer::BeginScene(m_Camera.GetRenderCamera());
 
       m_ScreenFrameBuffer->Bind();
       RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.f });
@@ -125,11 +143,16 @@ public:
 		m_Model->Render(defaultShader);
 
 		m_Model->SetTransform(glm::mat4(1.f));
-		m_Model->Render(defaultShader);
+      m_Model->Render(defaultShader);
+
+      RenderCommand::CullFaces(false);
+      auto skyboxShader = AssetManager::GetShader(m_ScyboxShader);
+      m_Skybox->Render(skyboxShader);
+      RenderCommand::CullFaces(true);
 
       auto lightShader = AssetManager::GetShader(m_LightSourceShader);
 		for (const auto& ls : m_LightSources)
-			ls->Render(lightShader);
+         ls->Render(lightShader);
 
       m_ScreenFrameBuffer->Unbind();
       RenderCommand::SetClearColor({ 1.f, 1.f, 1.f, 1.f });
@@ -139,7 +162,7 @@ public:
 		screenShader->Bind();
 		screenShader->UploadUniformFloat("u_dbgPPOffset", m_DbgPPOffset);
 		screenShader->UploadUniformInt("u_dbgPPEffect", m_DbgPPEffect);
-		m_ScreenQuad->Render(screenShader);
+      m_ScreenQuad->Render(screenShader);
 
 		Renderer::EndScene();
 	}
@@ -193,8 +216,7 @@ private:
 
 	std::vector<SPtr<Scn::Cube>> m_LightSources;
 
-   SPtr<Scn::Cube> m_Skybox = std::make_shared<Scn::Cube>(glm::mat4(1.f), 20.f);
-
+   SPtr<Scn::SkyBox> m_Skybox = std::make_shared<Scn::SkyBox>();
 	SPtr<Scn::Quad> m_ScreenQuad = std::make_shared<Scn::Quad>(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 0.f)));
 
 	std::string m_DefaultShader      = "default";

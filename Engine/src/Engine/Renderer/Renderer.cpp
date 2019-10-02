@@ -2,6 +2,7 @@
 #include "Renderer.h"
 
 #include "Platform/OpenGL/OpenGLShader.h"
+#include "Assets.h"
 
 namespace Engine {
 
@@ -15,6 +16,8 @@ namespace Engine {
 	void Renderer::BeginScene(const SPtr<Camera>&  camera)
 	{
 		s_SceneData->ViewProjectionMatrix = camera->GetViewProjectionMatrix();
+      s_SceneData->view = camera->GetViewMatrix();
+      s_SceneData->projection = camera->GetProjectionMatrix();
 	}
 
 	void Renderer::EndScene()
@@ -27,9 +30,15 @@ namespace Engine {
  		shader->UploadUniformMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
 		shader->UploadUniformMat4("u_Transform", transform);
 
+      shader->UploadUniformMat4("u_projection", s_SceneData->projection);
+      shader->UploadUniformMat4("u_view", s_SceneData->view);
+
 		vertexArray->Bind();
-		RenderCommand::DrawIndexed(vertexArray);
-		//RenderCommand::Draw(vertexArray);
+
+      //if (shader == AssetManager::GetShader("default_skybox"))
+      //   RenderCommand::Draw(vertexArray);
+      //else
+		   RenderCommand::DrawIndexed(vertexArray);
 	}
 
 }

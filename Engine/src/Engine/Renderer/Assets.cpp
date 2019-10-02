@@ -54,10 +54,15 @@ namespace Engine {
          return it->second;
       }
 
-      static std::string texturesPath = "assets/textures/Cubemaps";
+      static std::string texturesPath = "assets/textures/Cubemaps/";
       std::string path = texturesPath + name + "/";
       std::vector<std::string> names = {
-      
+         path + "posx.jpg",
+         path + "negx.jpg",
+         path + "posy.jpg",
+         path + "negy.jpg",
+         path + "posz.jpg",
+         path + "negz.jpg",
       };
       auto tex = CubeMap::Create(names);
       m_Data.emplace(name, tex);

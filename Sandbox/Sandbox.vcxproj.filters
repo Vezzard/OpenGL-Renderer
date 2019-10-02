@@ -27,5 +27,11 @@
     <None Include="assets\shaders\default_screen_v.glsl">
       <Filter>shaders</Filter>
     </None>
+    <None Include="assets\shaders\default_skybox_f.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="assets\shaders\default_skybox_v.glsl">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

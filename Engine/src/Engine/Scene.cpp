@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Scene.h"
 #include "Renderer/Renderer.h"
+#include "Renderer/Assets.h"
 
 namespace Engine {
 namespace Scn {
@@ -54,9 +55,9 @@ SPtr<Material> Model::GetMaterial(const std::string& name)
 }
 
 
-SPtr<Texture> Model::AddTexture(const std::string& matName, const std::string& texName, Texture::Type type)
+SPtr<Texture> Model::AddTexture(const std::string& matName, const SPtr<Engine::Texture>& texture, Texture::Type type)
 {
-	auto tex = std::make_shared<Engine::Scn::Texture>(texName);
+	auto tex = std::make_shared<Engine::Scn::Texture>(texture);
 	tex->Load();
 	return AddTexture(matName, tex, type);
 }
@@ -166,15 +167,13 @@ void Mesh::Render(void) const
 void Mesh::Render(const SPtr<Shader>& shader) const
 {
 	shader->Bind();
-	UploadUniforms(shader);
+	PrepareSubmit(shader);
 	Renderer::Submit(shader, m_VAO, m_WorldTransform);
 }
 
 
-void Mesh::UploadUniforms(const SPtr<Shader>& shader) const
+void Mesh::PrepareSubmit(const SPtr<Shader>& shader) const
 {
-	shader->UploadUniformFloat("u_material.shininess", 32.f);
-
 	int normalMapping = 0;
 	for (const auto& t : m_Material->GetTextures()) {
 		switch (t->GetType())
@@ -196,9 +195,20 @@ void Mesh::UploadUniforms(const SPtr<Shader>& shader) const
 			shader->UploadUniformInt("u_material.normal", 2);
 			t->GetRenderTex()->Bind(2);
 			normalMapping = 1;
-			break;
+         break;
+      case Texture::Type::Reflection:
+         shader->UploadUniformInt("u_material.reflection", 3);
+         t->GetRenderTex()->Bind(3);
+         break;
+      case Texture::Type::Cubemap:
+         m_VAO->Bind();
+         t->GetRenderTex()->Bind();
+         return;
+         break;
 		}
-	}
+   }
+   
+   shader->UploadUniformFloat("u_material.shininess", 32.f);
 	shader->UploadUniformInt("u_normalMapping", normalMapping);
 }
 
@@ -215,12 +225,18 @@ void Mesh::GetIndecies(std::vector<uint>& indicies) const
 }
 
 
-Engine::SPtr<Texture> Mesh::AddTexture(const SPtr<Texture2D>& tex, Texture::Type type)
+Engine::SPtr<Texture> Mesh::AddTexture(const SPtr<Engine::Texture>& tex, Texture::Type type)
 {
 	auto texture = std::make_shared<Texture>(tex);
 	texture->SetType(type);
 	m_Material->AddTexture(texture);
 	return texture;
+}
+
+void Mesh::BindCubemap(const SPtr<CubeMap>& cubemap)
+{
+   m_VAO->Bind();
+   cubemap->Bind();
 }
 
 Material::Material(const aiMaterial* material, Model& model, const std::string& shader)
@@ -272,8 +288,7 @@ aiTextureType Texture::ConvertType(Type type)
 void Texture::Load(void)
 {
 	if (!IsLoaded()) {
-		std::string path = "assets/textures/" + m_Name;
-		m_RenderTex = Texture2D::Create(path);
+		m_RenderTex = AssetManager::GetTexture2D(m_Name); //Texture2D::Create(path);
 	}
 }
 
@@ -348,5 +363,76 @@ void Quad::FillIndicies(void)
 }
 
 
+// Engine::BufferLayout SkyBox::GetVboLayout(void) const
+// {
+//    return {
+//       { Engine::ShaderDataType::Float3, "a_Position" }
+//    };
+// }
+
+
+// void SkyBox::FillVerticies(void)
+// {
+//    glm::vec3 v3(0.f);
+//    glm::vec2 v2(0.f);
+//    m_Verts = {
+//       { { -1.0f,  1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f, -1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f, -1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f, -1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f,  1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f,  1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f, -1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f, -1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f,  1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f,  1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f,  1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f, -1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f, -1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f, -1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f,  1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f,  1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f,  1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f, -1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f, -1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f,  1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f,  1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f,  1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f, -1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f, -1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f,  1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f,  1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f,  1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f,  1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f,  1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f,  1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f, -1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f, -1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f, -1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f, -1.0f, -1.0f }, v3, v3, v3, v2 },
+//       { { -1.0f, -1.0f,  1.0f }, v3, v3, v3, v2 },
+//       { {  1.0f, -1.0f,  1.0f }, v3, v3, v3, v2 },
+//    };
+// }
+
+
+
+// void SkyBox::FillIndicies(void)
+// {
+//    m_Faces = {
+//       { 0, 3, 1 },
+//       { 1, 3, 2 },
+//       { 1, 2, 5 },
+//       { 1, 5, 4 },
+//       { 6, 4, 5 },
+//       { 6, 7, 4 },
+//       { 0, 6, 3 },
+//       { 0, 7, 6 },
+//       { 3, 5, 2 },
+//       { 3, 6, 5 },
+//       { 0, 1, 4 },
+//       { 0, 4, 7 }
+//    };
+// }
 }
 }

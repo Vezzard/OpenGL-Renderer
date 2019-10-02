@@ -22,6 +22,8 @@ namespace Engine {
 		struct SceneData
 		{
 			glm::mat4 ViewProjectionMatrix;
+         glm::mat4 view;
+         glm::mat4 projection;
 		};
 
 		static SceneData* s_SceneData;

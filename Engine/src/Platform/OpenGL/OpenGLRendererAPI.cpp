@@ -24,7 +24,20 @@ namespace Engine {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OpenGLRendererAPI::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
+   void OpenGLRendererAPI::DepthMask(bool enable)
+   {
+      glDepthMask(enable);
+   }
+
+   void OpenGLRendererAPI::CullFaces(bool enable)
+   {
+      if (enable)
+         glEnable(GL_CULL_FACE);
+      else
+         glDisable(GL_CULL_FACE);
+   }
+
+   void OpenGLRendererAPI::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
 	{
 		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 	}

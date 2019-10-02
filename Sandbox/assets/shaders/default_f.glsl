@@ -5,6 +5,7 @@ struct Material {
     sampler2D diffuse;
     sampler2D specular;
 	sampler2D normal;
+	sampler2D reflection;
     float shininess;
 }; 
 
@@ -58,6 +59,7 @@ uniform SpotLight	u_spotLights[NR_SPOT_LIGHTS];
 uniform Material	u_material;
 uniform int			u_normalMapping;
 uniform int			u_dbgDisableNormalMapping;
+uniform samplerCube u_cubemap;
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
@@ -78,16 +80,24 @@ void main()
 
     vec3 viewDir = normalize(u_viewPos - v_FragPos);
 
-	vec3 result = vec3(0.f, 0.f, 0.f);
-    result += CalcDirLight(u_dirLight, norm, viewDir);
+	vec3 result = vec3(0.f, 0.f, 0.f);    
+    
+	// reflection calculations. break everything for some reason 0_o
+	//vec3 cameraDir = normalize(v_FragPos - u_viewPos);
+	//vec3 reflDir = reflect(cameraDir, norm);
+	//vec3 reflCol = vec3(texture(u_cubemap, reflDir));
+	//float refl = vec3(texture(u_material.reflection, v_TexCoord)).r;
+	//reflCol *= refl;
 
+    result += CalcDirLight(u_dirLight, norm, viewDir);
+	
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
         result += CalcPointLight(u_pointLights[i], norm, v_FragPos, viewDir); 
-
+	
     for(int i = 0; i < NR_SPOT_LIGHTS; i++)
-		result += CalcSpotLight(u_spotLights[i], norm, v_FragPos, viewDir);    
-    
-    color = vec4(result, 1.0);
+		result += CalcSpotLight(u_spotLights[i], norm, v_FragPos, viewDir);
+
+	color =  vec4(result, 1.f);
 }
 
 // calculates the color when using a directional light.
