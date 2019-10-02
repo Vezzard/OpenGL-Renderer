@@ -27,11 +27,15 @@ namespace Engine {
 
    class OpenGLCubeMap : public CubeMap
    {
+   public:
       OpenGLCubeMap(const std::vector<std::string>& paths);
       virtual ~OpenGLCubeMap();
       
-      virtual void Bind       (uint32_t slot = 0) const override;
-      virtual uint GetRenderId(void) const override { return m_RendererID; };
+      virtual void Bind          (uint32_t slot = 0) const override;
+      virtual uint GetRenderId   (void) const override   { return m_RendererID; };
+
+		virtual uint GetWidth	   (void) const override   { return m_Width;  }
+		virtual uint GetHeight     (void) const override   { return m_Height; }
 
    private:
       uint m_Width, m_Height;

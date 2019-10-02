@@ -30,4 +30,16 @@ namespace Engine {
 		return nullptr;
 	}
 
+   Engine::SPtr<Engine::CubeMap> CubeMap::Create(const std::vector<std::string>& paths)
+   {
+      switch (Renderer::GetAPI())
+      {
+      case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+      case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLCubeMap>(paths);
+      }
+
+      CORE_ASSERT(false, "Unknown RendererAPI!");
+      return nullptr;
+   }
+
 }
