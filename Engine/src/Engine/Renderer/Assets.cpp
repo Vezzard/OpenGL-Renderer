@@ -2,7 +2,12 @@
 #include "Assets.h"
 #include "Renderer.h"
 
+#include <filesystem>
+
+
 namespace Engine {
+
+   namespace fs = std::filesystem;
 
    SPtr<Shader> ShaderCreator::Get(const std::string& name)
    {
@@ -34,14 +39,16 @@ namespace Engine {
 
    SPtr<Texture2D> TextureCreator::Get(const std::string& name)
    {
-      auto& it = m_Data.find(name);
+      const std::string filename = fs::path(name).filename().string();
+
+      auto& it = m_Data.find(filename);
       if (it != m_Data.end()) {
          return it->second;
       }
 
-      static std::string texturesPath = "assets/textures/";
-      auto tex = Texture2D::Create(texturesPath + name);
-      m_Data.emplace(name, tex);
+      static std::string texturesPath = "assets/textures/sponza/";
+      auto tex = Texture2D::Create(texturesPath + filename);
+      m_Data.emplace(filename, tex);
 
       return tex;
    }

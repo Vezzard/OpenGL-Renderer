@@ -14,10 +14,10 @@ namespace Engine {
 		inline static Position	GetMousePosition	(void)					{ return s_Instance->GetMousePositionImpl(); }
 		inline static float		GetMouseX			(void)					{ return s_Instance->GetMouseXImpl(); }
 		inline static float		GetMouseY			(void)					{ return s_Instance->GetMouseYImpl(); }
-		inline static void		Init				(void)					{ return s_Instance->InitImpl(); }
+		inline static void		Init				   (void)					{ return s_Instance->InitImpl(); }
 		inline static Position	GetScroll			(void)					{ return s_Instance->GetScrollImpl(); }
-		inline static void		OnUpdate			(void)					{ return s_Instance->OnUpdateImpl(); }
-		inline static Input*	GetInstance			(void)					{ return s_Instance; }
+		inline static void		OnUpdate			   (void)					{ return s_Instance->OnUpdateImpl(); }
+		inline static Input*	   GetInstance			(void)					{ return s_Instance; }
 
 	protected:
 		virtual bool		IsKeyPressedImpl		(int keycode) = 0;
@@ -27,7 +27,7 @@ namespace Engine {
 		virtual float		GetMouseYImpl			(void) = 0;
 		virtual Position	GetScrollImpl			(void) = 0;
 		virtual void		OnUpdateImpl			(void) = 0;
-		virtual void		InitImpl				(void) = 0;
+		virtual void		InitImpl				   (void) = 0;
 
 		static Input* s_Instance;
 	};

@@ -22,8 +22,8 @@ void FlyCamera::Update(Timestep ts)
 		return;
 	}
 
-	m_MoveSpeed += Input::GetScroll().second;
-	m_MoveSpeed = glm::clamp(m_MoveSpeed, 0.1f, 50.f);
+	m_MoveSpeed += Input::GetScroll().second * 10.f;
+	m_MoveSpeed = glm::clamp(m_MoveSpeed, 0.1f, 5000.f);
 
 	static float yaw = -90.f;
 	static float pitch = 0.f;

@@ -29,7 +29,7 @@ public:
 		: Layer("Example")
 	{
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile("D:/tmp/tmpPrj/Project/Sandbox/assets/models/sponza/sponza.obj", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+		const aiScene* scene = importer.ReadFile("D:/Projects/Git/Engine/Sandbox/assets/models/sponza/sponza.obj", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 		ASSERT(scene, "Model loading failed");
       m_Model = std::make_shared<Scn::Model>(scene);
       
@@ -66,7 +66,7 @@ public:
 		
 		auto& dl = m_ScnLight.dirLight;
 		dl.direction   = glm::vec3(-0.2f, -1.0f, -0.3f);
-		dl.ambient		= glm::vec3(0.7f, 0.7f, 0.7f);
+		dl.ambient		= glm::vec3(0.05f, 0.05f, 0.05f);
 		dl.diffuse		= glm::vec3(0.4f, 0.4f, 0.4f);
 		dl.specular		= glm::vec3(0.5f, 0.5f, 0.5f);
 
@@ -76,8 +76,8 @@ public:
 		pl.diffuse		= glm::vec3(0.8f, 0.8f, 0.8f);
 		pl.specular		= glm::vec3(1.0f, 1.0f, 1.0f);
 		pl.constant		= 1.0f;
-		pl.linear		= 0.09f;
-		pl.quadratic	= 0.032f;
+		pl.linear		= 0.0009f;
+		pl.quadratic	= 0.00032f;
 
 		auto& sl = m_ScnLight.spotLights[0];
 		sl.position = m_Camera.GetPosition();
@@ -86,13 +86,13 @@ public:
 		sl.diffuse		= glm::vec3(1.0f, 1.0f, 1.0f);
 		sl.specular		= glm::vec3(1.0f, 1.0f, 1.0f);
 		sl.constant		= 1.0f;
-		sl.linear		= 0.09f;
-		sl.quadratic	= 0.032f;
+		sl.linear		= 0.0009f;
+		sl.quadratic	= 0.00032f;
 		sl.cutOff		= glm::cos(glm::radians(12.5f));
 		sl.outerCutOff	= glm::cos(glm::radians(15.0f));
 
 		for (const auto& l : m_ScnLight.pointLights)
-			m_LightSources.emplace_back(std::make_shared<Scn::Cube>(glm::translate(glm::mat4(1.f), l.position), 0.1f));
+			m_LightSources.emplace_back(std::make_shared<Scn::Cube>(glm::translate(glm::mat4(1.f), l.position), 1.f));
 
       m_ScreenFrameBuffer.reset(FrameBuffer::Create());
       m_ScreenFrameBuffer->Bind();
@@ -184,7 +184,7 @@ public:
 		ImGui::ColorEdit3("Dir light diffuse",		   glm::value_ptr(dl.diffuse));
 		ImGui::ColorEdit3("Dir light specular",		glm::value_ptr(dl.specular));
 
-		ImGui::SliderFloat3("Point light position",	glm::value_ptr(pl.position), -15.f, 15.f);
+		ImGui::SliderFloat3("Point light position",	glm::value_ptr(pl.position), -1500.f, 1500.f);
 		ImGui::ColorEdit3("Point light ambient",	   glm::value_ptr(pl.ambient));
 		ImGui::ColorEdit3("Point light diffuse",	   glm::value_ptr(pl.diffuse));
 		ImGui::ColorEdit3("Point light specular",	   glm::value_ptr(pl.specular));

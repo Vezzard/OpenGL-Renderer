@@ -260,12 +260,16 @@ void Material::LoadTextures(const aiMaterial* material, Model& model, Texture::T
 		material->GetTexture(aiType, i, &path);
 		std::string spath{path.C_Str()};
 		const uint64 pos = spath.find('*');
+      SPtr<Texture> texture;
 		if (pos != std::string::npos) {
          const uint id = std::stoi(spath.substr(pos + 1, spath.length() - pos - 1));
-         SPtr<Texture> t = model.GetTexture(id);
-         t->SetType(type);
-         m_Textures.emplace_back(t);
+         texture = model.GetTexture(id);
+      } else {
+         auto tex = std::dynamic_pointer_cast<Engine::Texture, Texture2D>(AssetManager::GetTexture2D(spath));
+         texture = std::make_shared<Texture>(tex);
       }
+      texture->SetType(type);
+      m_Textures.emplace_back(texture);
 	}
 }
 

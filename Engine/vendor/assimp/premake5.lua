@@ -89,7 +89,6 @@ project "assimp"
     --    buildoptions "/MT"
 
 	filter "configurations:Debug"
-		defines "DEBUG"
 		runtime "Debug"
 		optimize "Speed"
 		symbols "on"

@@ -74,8 +74,8 @@ void main()
 		norm = normalize(v_Normal);
 	} else {
 		norm = texture(u_material.normal, v_TexCoord).rgb;
-		norm = normalize(norm * 2.f - 1.f);   
-		norm = normalize(v_TBN * norm);
+		//norm = normalize(norm * 2.f - 1.f);   
+		//norm = normalize(v_TBN * norm);
 	}
 
     vec3 viewDir = normalize(u_viewPos - v_FragPos);
@@ -92,12 +92,12 @@ void main()
     result += CalcDirLight(u_dirLight, norm, viewDir);
 	
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
-        //result += CalcPointLight(u_pointLights[i], norm, v_FragPos, viewDir); 
+        result += CalcPointLight(u_pointLights[i], norm, v_FragPos, viewDir); 
 	
     for(int i = 0; i < NR_SPOT_LIGHTS; i++)
-		//result += CalcSpotLight(u_spotLights[i], norm, v_FragPos, viewDir);
+		result += CalcSpotLight(u_spotLights[i], norm, v_FragPos, viewDir);
 
-	color =  vec4(result, 1.f);
+	color =  vec4(norm, 1.f);//vec4(result, 1.f);
 }
 
 // calculates the color when using a directional light.
