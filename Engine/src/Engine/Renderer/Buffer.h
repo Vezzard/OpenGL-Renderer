@@ -19,9 +19,9 @@ enum class ShaderDataType
 	Bool
 };
 
-static constexpr uint32_t ShaderDataTypeSize(ShaderDataType type)
+static constexpr uint ShaderDataTypeSize(ShaderDataType type)
 {
-	uint32_t size = 0;
+	uint size = 0;
 	switch (type) {
 		case ShaderDataType::Float:    size = 4;		 break;
 		case ShaderDataType::Float2:   size = 4 * 2;	 break;
@@ -55,7 +55,7 @@ struct BufferElement
 	{
 	}
 
-	uint32_t GetComponentCount() const
+	uint GetComponentCount() const
 	{
 		switch (Type)
 		{
@@ -88,7 +88,7 @@ public:
 		CalculateOffsetsAndStride();
 	}
 
-	inline uint32_t GetStride() const { return m_Stride; }
+	inline uint GetStride() const { return m_Stride; }
 	inline const std::vector<BufferElement>& GetElements() const { return m_Elements; }
 
 	std::vector<BufferElement>::iterator begin() { return m_Elements.begin(); }
@@ -98,7 +98,7 @@ public:
 private:
 	void CalculateOffsetsAndStride()
 	{
-		uint32_t offset = 0;
+		uint offset = 0;
 		m_Stride = 0;
 		for (auto& element : m_Elements)
 		{
@@ -109,7 +109,7 @@ private:
 	}
 private:
 	std::vector<BufferElement> m_Elements;
-	uint32_t m_Stride = 0;
+	uint m_Stride = 0;
 };
 
 class VertexBuffer
@@ -123,9 +123,9 @@ public:
 	virtual const BufferLayout& GetLayout() const = 0;
 	virtual void SetLayout(const BufferLayout& layout) = 0;
 
-	virtual uint32_t GetSize() const = 0;
+	virtual uint GetSize() const = 0;
 
-	static VertexBuffer* Create(float* vertices, uint32_t size);
+	static VertexBuffer* Create(float* vertices, uint size);
 };
 
 class IndexBuffer
@@ -136,9 +136,9 @@ public:
 	virtual void Bind() const = 0;
 	virtual void Unbind() const = 0;
 
-	virtual uint32_t GetCount() const = 0;
+	virtual uint GetCount() const = 0;
 
-	static IndexBuffer* Create(uint32_t* indices, uint32_t size);
+	static IndexBuffer* Create(uint* indices, uint size);
 };
 
 class RenderBuffer;

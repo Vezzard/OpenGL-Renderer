@@ -16,7 +16,7 @@ namespace Engine {
 
 		virtual void			Bind		   (uint slot = 0) const = 0;
 
-		virtual unsigned int	GetRenderId	(void) const = 0;
+		virtual uint	      GetRenderId	(void) const = 0;
 	};
 
 	class Texture2D : public Texture

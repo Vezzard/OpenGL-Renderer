@@ -53,7 +53,7 @@ namespace Engine {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	}
 
-	void OpenGLTexture2D::Bind(uint32_t slot) const
+	void OpenGLTexture2D::Bind(uint slot) const
 	{
 		glBindTextureUnit(slot, m_RendererID);
 	}
@@ -94,7 +94,7 @@ namespace Engine {
       glDeleteTextures(1, &m_RendererID);
    }
 
-   void OpenGLCubeMap::Bind(uint32_t slot /*= 0*/) const
+   void OpenGLCubeMap::Bind(uint slot /*= 0*/) const
    {
       glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
    }

@@ -92,10 +92,10 @@ void main()
     result += CalcDirLight(u_dirLight, norm, viewDir);
 	
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
-        result += CalcPointLight(u_pointLights[i], norm, v_FragPos, viewDir); 
+        //result += CalcPointLight(u_pointLights[i], norm, v_FragPos, viewDir); 
 	
     for(int i = 0; i < NR_SPOT_LIGHTS; i++)
-		result += CalcSpotLight(u_spotLights[i], norm, v_FragPos, viewDir);
+		//result += CalcSpotLight(u_spotLights[i], norm, v_FragPos, viewDir);
 
 	color =  vec4(result, 1.f);
 }

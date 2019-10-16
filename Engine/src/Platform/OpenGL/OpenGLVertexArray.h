@@ -19,8 +19,8 @@ namespace Engine {
 		virtual const std::vector<SPtr<VertexBuffer>>& GetVertexBuffers() const { return m_VertexBuffers; }
 		virtual const SPtr<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
 	private:
-		uint32_t m_RendererID;
-		uint32_t m_VertexBufferIndex = 0;
+		uint m_RendererID;
+		uint m_VertexBufferIndex = 0;
 		std::vector<SPtr<VertexBuffer>> m_VertexBuffers;
 		SPtr<IndexBuffer> m_IndexBuffer;
 	};

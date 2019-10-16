@@ -48,7 +48,7 @@ public:
 //       tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("leg_showroom_refl.png"));
 //       m_Model->AddTexture("Leg", tex, Scn::Texture::Type::Reflection);
 		
-      m_Camera.SetPerspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f);
+      m_Camera.SetPerspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 10000.0f);
 
       auto cubeMap = AssetManager::GetCubemap("cube2");
       m_Skybox->AddTexture(cubeMap, Scn::Texture::Type::Cubemap);
@@ -66,7 +66,7 @@ public:
 		
 		auto& dl = m_ScnLight.dirLight;
 		dl.direction   = glm::vec3(-0.2f, -1.0f, -0.3f);
-		dl.ambient		= glm::vec3(0.05f, 0.05f, 0.05f);
+		dl.ambient		= glm::vec3(0.7f, 0.7f, 0.7f);
 		dl.diffuse		= glm::vec3(0.4f, 0.4f, 0.4f);
 		dl.specular		= glm::vec3(0.5f, 0.5f, 0.5f);
 

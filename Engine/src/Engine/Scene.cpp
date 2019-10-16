@@ -259,7 +259,7 @@ void Material::LoadTextures(const aiMaterial* material, Model& model, Texture::T
 		aiString path;
 		material->GetTexture(aiType, i, &path);
 		std::string spath{path.C_Str()};
-		const uint pos = spath.find('*');
+		const uint64 pos = spath.find('*');
 		if (pos != std::string::npos) {
          const uint id = std::stoi(spath.substr(pos + 1, spath.length() - pos - 1));
          SPtr<Texture> t = model.GetTexture(id);

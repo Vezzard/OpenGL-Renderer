@@ -14,7 +14,7 @@ namespace Engine {
 		virtual uint GetWidth	   (void) const override   { return m_Width;  }
 		virtual uint GetHeight     (void) const override   { return m_Height; }
                    
-		virtual void Bind		      (uint32_t slot = 0) const override;
+		virtual void Bind		      (uint slot = 0) const override;
 		virtual uint GetRenderId	(void) const override   { return m_RendererID; };
 	private:
 		void Init(unsigned char* data, int width, int height, int channels);
@@ -31,7 +31,7 @@ namespace Engine {
       OpenGLCubeMap(const std::vector<std::string>& paths);
       virtual ~OpenGLCubeMap();
       
-      virtual void Bind          (uint32_t slot = 0) const override;
+      virtual void Bind          (uint slot = 0) const override;
       virtual uint GetRenderId   (void) const override   { return m_RendererID; };
 
 		virtual uint GetWidth	   (void) const override   { return m_Width;  }

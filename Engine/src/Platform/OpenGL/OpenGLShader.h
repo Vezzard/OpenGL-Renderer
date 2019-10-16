@@ -24,7 +24,7 @@ namespace Engine {
 		void UploadUniformMat3(const std::string& name, const glm::mat3& matrix) override;
 		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix) override;
 	private:
-		uint32_t m_RendererID;
+		uint m_RendererID;
 	};
 
 }

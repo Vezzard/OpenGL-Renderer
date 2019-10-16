@@ -7,7 +7,7 @@
 
 namespace Engine {
 
-VertexBuffer* VertexBuffer::Create(float* vertices, uint32_t size)
+VertexBuffer* VertexBuffer::Create(float* vertices, uint size)
 {
 	switch (Renderer::GetAPI())
 	{
@@ -19,7 +19,7 @@ VertexBuffer* VertexBuffer::Create(float* vertices, uint32_t size)
 	return nullptr;
 }
 
-IndexBuffer* IndexBuffer::Create(uint32_t* indices, uint32_t size)
+IndexBuffer* IndexBuffer::Create(uint* indices, uint size)
 {
 	switch (Renderer::GetAPI())
 	{
