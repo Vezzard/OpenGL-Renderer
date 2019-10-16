@@ -254,17 +254,18 @@ Material::Material(const aiMaterial* material, Model& model, const std::string& 
 void Material::LoadTextures(const aiMaterial* material, Model& model, Texture::Type type)
 {
 	aiTextureType aiType = Texture::ConvertType(type);
-	uint count = material->GetTextureCount(aiType);
+	const uint count = material->GetTextureCount(aiType);
 	for (uint i = 0; i < count; ++i) {
 		aiString path;
 		material->GetTexture(aiType, i, &path);
 		std::string spath{path.C_Str()};
-		uint pos = spath.find('*');
-		ASSERT(pos != std::string::npos);
-		const uint id = std::stoi(spath.substr(pos + 1, spath.length() - pos - 1));
-		SPtr<Texture> t = model.GetTexture(id);
-		t->SetType(type);
-		m_Textures.emplace_back(t);
+		const uint pos = spath.find('*');
+		if (pos != std::string::npos) {
+         const uint id = std::stoi(spath.substr(pos + 1, spath.length() - pos - 1));
+         SPtr<Texture> t = model.GetTexture(id);
+         t->SetType(type);
+         m_Textures.emplace_back(t);
+      }
 	}
 }
 

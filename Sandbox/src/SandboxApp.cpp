@@ -29,24 +29,24 @@ public:
 		: Layer("Example")
 	{
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile("D:/Projects/Git/Engine/Sandbox/assets/models/nanosuit/scene.fbx", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+		const aiScene* scene = importer.ReadFile("D:/tmp/tmpPrj/Project/Sandbox/assets/models/sponza/sponza.obj", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 		ASSERT(scene, "Model loading failed");
       m_Model = std::make_shared<Scn::Model>(scene);
       
-      auto bodyTex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("body_showroom_ddn.png"));
-      m_Model->AddTexture("Body", bodyTex, Scn::Texture::Type::Bump);
-      auto tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("arm_showroom_ddn.png"));
-      m_Model->AddTexture("Arm", tex, Scn::Texture::Type::Bump);
-      tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("arm_showroom_refl.png"));
-      m_Model->AddTexture("Arm", tex, Scn::Texture::Type::Reflection);
-      tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("body_showroom_refl.png"));
-      m_Model->AddTexture("Body", tex, Scn::Texture::Type::Reflection);
-      tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("hand_showroom_refl.png"));
-      m_Model->AddTexture("Hand", tex, Scn::Texture::Type::Reflection);
-      tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("helmet_showroom_refl.png"));
-      m_Model->AddTexture("Helmet", tex, Scn::Texture::Type::Reflection);
-      tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("leg_showroom_refl.png"));
-      m_Model->AddTexture("Leg", tex, Scn::Texture::Type::Reflection);
+//       auto bodyTex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("body_showroom_ddn.png"));
+//       m_Model->AddTexture("Body", bodyTex, Scn::Texture::Type::Bump);
+//       auto tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("arm_showroom_ddn.png"));
+//       m_Model->AddTexture("Arm", tex, Scn::Texture::Type::Bump);
+//       tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("arm_showroom_refl.png"));
+//       m_Model->AddTexture("Arm", tex, Scn::Texture::Type::Reflection);
+//       tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("body_showroom_refl.png"));
+//       m_Model->AddTexture("Body", tex, Scn::Texture::Type::Reflection);
+//       tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("hand_showroom_refl.png"));
+//       m_Model->AddTexture("Hand", tex, Scn::Texture::Type::Reflection);
+//       tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("helmet_showroom_refl.png"));
+//       m_Model->AddTexture("Helmet", tex, Scn::Texture::Type::Reflection);
+//       tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("leg_showroom_refl.png"));
+//       m_Model->AddTexture("Leg", tex, Scn::Texture::Type::Reflection);
 		
       m_Camera.SetPerspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f);
 
@@ -136,19 +136,19 @@ public:
 		defaultShader->UploadUniformsDefaultLighting(m_ScnLight, m_Camera.GetPosition());
 		defaultShader->UploadUniformInt("u_dbgDisableNormalMapping", m_DbgDisableNormalMapping ? 1 : 0);
 
-		m_Model->SetTransform(glm::translate(glm::mat4(1.f), glm::vec3(5.f, 0.f, -4.f)));
-		m_Model->Render(defaultShader);
-
-		m_Model->SetTransform(glm::translate(glm::mat4(1.f), glm::vec3(-5.f, 0.f, -4.f)));
-		m_Model->Render(defaultShader);
+// 		m_Model->SetTransform(glm::translate(glm::mat4(1.f), glm::vec3(5.f, 0.f, -4.f)));
+// 		m_Model->Render(defaultShader);
+// 
+// 		m_Model->SetTransform(glm::translate(glm::mat4(1.f), glm::vec3(-5.f, 0.f, -4.f)));
+// 		m_Model->Render(defaultShader);
 
 		m_Model->SetTransform(glm::mat4(1.f));
       m_Model->Render(defaultShader);
 
-      RenderCommand::CullFaces(false);
-      auto skyboxShader = AssetManager::GetShader(m_ScyboxShader);
-      m_Skybox->Render(skyboxShader);
-      RenderCommand::CullFaces(true);
+//       RenderCommand::CullFaces(false);
+//       auto skyboxShader = AssetManager::GetShader(m_ScyboxShader);
+//       m_Skybox->Render(skyboxShader);
+//       RenderCommand::CullFaces(true);
 
       auto lightShader = AssetManager::GetShader(m_LightSourceShader);
 		for (const auto& ls : m_LightSources)
