@@ -66,7 +66,7 @@ public:
 		
 		auto& dl = m_ScnLight.dirLight;
 		dl.direction   = glm::vec3(-0.2f, -1.0f, -0.3f);
-		dl.ambient		= glm::vec3(0.05f, 0.05f, 0.05f);
+		dl.ambient		= glm::vec3(0.1f, 0.1f, 0.1f);
 		dl.diffuse		= glm::vec3(0.4f, 0.4f, 0.4f);
 		dl.specular		= glm::vec3(0.5f, 0.5f, 0.5f);
 
@@ -76,8 +76,8 @@ public:
 		pl.diffuse		= glm::vec3(0.8f, 0.8f, 0.8f);
 		pl.specular		= glm::vec3(1.0f, 1.0f, 1.0f);
 		pl.constant		= 1.0f;
-		pl.linear		= 0.0009f;
-		pl.quadratic	= 0.00032f;
+		pl.linear		= 0.00009f;
+		pl.quadratic	= 0.000032f;
 
 		auto& sl = m_ScnLight.spotLights[0];
 		sl.position = m_Camera.GetPosition();
@@ -145,10 +145,10 @@ public:
 		m_Model->SetTransform(glm::mat4(1.f));
       m_Model->Render(defaultShader);
 
-//       RenderCommand::CullFaces(false);
-//       auto skyboxShader = AssetManager::GetShader(m_ScyboxShader);
-//       m_Skybox->Render(skyboxShader);
-//       RenderCommand::CullFaces(true);
+      RenderCommand::CullFaces(false);
+      auto skyboxShader = AssetManager::GetShader(m_ScyboxShader);
+      m_Skybox->Render(skyboxShader);
+      RenderCommand::CullFaces(true);
 
       auto lightShader = AssetManager::GetShader(m_LightSourceShader);
 		for (const auto& ls : m_LightSources)
@@ -165,6 +165,8 @@ public:
       m_ScreenQuad->Render(screenShader);
 
 		Renderer::EndScene();
+
+      AnimatePointLight(ts);
 	}
 
 	bool m_DbgDisableNormalMapping = false;
@@ -179,7 +181,7 @@ public:
 
 		ImGui::Begin("Settings");
 		
-		ImGui::ColorEdit3("Dir light direction",	   glm::value_ptr(dl.direction));
+		ImGui::SliderFloat3("Dir light direction",	glm::value_ptr(dl.direction), -1.f, 0.f);
 		ImGui::ColorEdit3("Dir light ambient",		   glm::value_ptr(dl.ambient));
 		ImGui::ColorEdit3("Dir light diffuse",		   glm::value_ptr(dl.diffuse));
 		ImGui::ColorEdit3("Dir light specular",		glm::value_ptr(dl.specular));
@@ -189,15 +191,15 @@ public:
 		ImGui::ColorEdit3("Point light diffuse",	   glm::value_ptr(pl.diffuse));
 		ImGui::ColorEdit3("Point light specular",	   glm::value_ptr(pl.specular));
 		ImGui::SliderFloat("Point light constant",	&pl.constant, 0.f, 1.f);
-		ImGui::SliderFloat("Point light linear",	   &pl.linear, 0.f, 1.f);
-		ImGui::SliderFloat("Point light quadratic",	&pl.quadratic, 0.f, 1.f);
+		ImGui::SliderFloat("Point light linear",	   &pl.linear, 0.f, 0.001f);
+		ImGui::SliderFloat("Point light quadratic",	&pl.quadratic, 0.f, 0.001f);
 
 		ImGui::ColorEdit3("Spot light ambient",		glm::value_ptr(sl.ambient));
 		ImGui::ColorEdit3("Spot light diffuse",		glm::value_ptr(sl.diffuse));
 		ImGui::ColorEdit3("Spot light specular",	   glm::value_ptr(sl.specular));
-		ImGui::SliderFloat("Spot light constant",	   &sl.constant, 0.f, 1.f);
-		ImGui::SliderFloat("Spot light linear",		&sl.linear, 0.f, 1.f);
-		ImGui::SliderFloat("Spot light quadratic",	&sl.quadratic, 0.f, 1.f);
+      ImGui::SliderFloat("Spot light constant",    &sl.constant, 0.f, 1.f);
+		ImGui::SliderFloat("Spot light linear",		&sl.linear, 0.f, 0.001f);
+		ImGui::SliderFloat("Spot light quadratic",	&sl.quadratic, 0.f, 0.001f);
 
 		ImGui::Checkbox("Disable normal mapping",	   &m_DbgDisableNormalMapping);
 
@@ -206,6 +208,30 @@ public:
 
 		ImGui::End();
 	}
+
+   void AnimatePointLight(Timestep ts)
+   {
+      constexpr float max_x   = 1100.f;
+      constexpr float max_z   = 150.f;
+      constexpr float y       = 200.f;
+      constexpr float speed_x = 100.f;
+      constexpr float speed_z = 20.f;
+
+      static int direction_x = 1;
+      static int direction_z = 1;
+      auto& pos = m_ScnLight.pointLights[0].position;
+      pos.y = y;
+
+      pos.x += direction_x * speed_x * ts;
+      if (abs(pos.x) > max_x) {
+         direction_x *= -1;
+      }
+
+      pos.z += direction_z * speed_z * ts;
+      if (abs(pos.z) > max_z) {
+         direction_z *= -1;
+      }
+   }
 
 	void OnEvent(Event& event) override
 	{

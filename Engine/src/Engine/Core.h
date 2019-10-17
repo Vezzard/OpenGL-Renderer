@@ -16,6 +16,10 @@
 	#error Engine only supports Windows!
 #endif
 
+#ifdef RELEASE
+#define ENABLE_ASSERTS
+#endif
+
 #ifdef DEBUG
 	#define ENABLE_ASSERTS
 #endif

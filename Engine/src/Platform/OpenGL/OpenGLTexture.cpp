@@ -33,18 +33,23 @@ namespace Engine {
 		m_Height = height;
 
 		GLenum internalFormat = 0, dataFormat = 0;
-		if (channels == 4)
-		{
-			internalFormat = GL_RGBA8;
-			dataFormat = GL_RGBA;
-		}
-		else if (channels == 3)
-		{
-			internalFormat = GL_RGB8;
-			dataFormat = GL_RGB;
-		}
 
-		CORE_ASSERT(internalFormat & dataFormat, "Format not supported!");
+      switch (channels) {
+         case 4: {
+			   internalFormat = GL_RGBA8;
+            dataFormat = GL_RGBA; 
+         } break;
+         case 3: {
+			   internalFormat = GL_RGB8;
+			   dataFormat = GL_RGB;
+         } break;
+         case 1: {
+            internalFormat = GL_R8;
+            dataFormat = GL_RED;
+         } break;
+         default:
+            CORE_ASSERT(false, "Format not supported!");
+      }
 
 		glGenTextures(1, &m_RendererID);
 		glBindTexture(GL_TEXTURE_2D, m_RendererID);

@@ -175,6 +175,7 @@ void Mesh::Render(const SPtr<Shader>& shader) const
 void Mesh::PrepareSubmit(const SPtr<Shader>& shader) const
 {
 	int normalMapping = 0;
+   int specularMapping = 0;
 	for (const auto& t : m_Material->GetTextures()) {
 		switch (t->GetType())
 		{
@@ -185,6 +186,7 @@ void Mesh::PrepareSubmit(const SPtr<Shader>& shader) const
 		case Texture::Type::Specular:
 			shader->UploadUniformInt("u_material.specular", 1);
 			t->GetRenderTex()->Bind(1);
+         specularMapping = 1;
 			break;
 		case Texture::Type::Normal:
 			shader->UploadUniformInt("u_material.normal", 2);
@@ -210,6 +212,7 @@ void Mesh::PrepareSubmit(const SPtr<Shader>& shader) const
    
    shader->UploadUniformFloat("u_material.shininess", 32.f);
 	shader->UploadUniformInt("u_normalMapping", normalMapping);
+   shader->UploadUniformInt("u_specularMapping", specularMapping);
 }
 
 
