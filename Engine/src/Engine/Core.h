@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #ifdef PLATFORM_WINDOWS
 #if DYNAMIC_LINK
@@ -53,3 +54,6 @@ namespace Engine {
 	template<typename T>
 	using WPtr = std::weak_ptr<T>;
 }
+
+
+const std::string projectDir = "D:/tmp/tmpPrj/Project/";

@@ -3,6 +3,8 @@
 #include "Renderer.h"
 
 #include <filesystem>
+#include "assimp/Importer.hpp"
+#include "assimp/postprocess.h"
 
 
 namespace Engine {
@@ -46,7 +48,7 @@ namespace Engine {
          return it->second;
       }
 
-      static std::string texturesPath = "assets/textures/sponza/";
+      static const std::string texturesPath = "assets/textures/sponza/";
       auto tex = Texture2D::Create(texturesPath + filename);
       m_Data.emplace(filename, tex);
 
@@ -61,7 +63,7 @@ namespace Engine {
          return it->second;
       }
 
-      static std::string texturesPath = "assets/textures/Cubemaps/";
+      static const std::string texturesPath = "assets/textures/Cubemaps/";
       std::string path = texturesPath + name + "/";
       std::vector<std::string> names = {
          path + "posx.jpg",
@@ -75,6 +77,27 @@ namespace Engine {
       m_Data.emplace(name, tex);
 
       return tex;
+   }
+
+
+   Engine::SPtr<Engine::Scn::Model> ModelCreator::Get(const std::string& name)
+   {
+      auto& it = m_Data.find(name);
+      if (it != m_Data.end()) {
+         return it->second;
+      }
+
+      static const std::string modelsPath = "Sandbox/assets/models/";
+      const std::string path = projectDir + modelsPath + name;
+
+      Assimp::Importer importer;
+      const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+      ASSERT(scene, "Model loading failed");
+      
+      auto model = std::make_shared<Scn::Model>(scene);
+      m_Data.emplace(name, model);
+
+      return model;
    }
 
 

@@ -28,10 +28,7 @@ public:
 	ExampleLayer(float screenWidth, float screenHeight)
 		: Layer("Example")
 	{
-		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile("D:/Projects/Git/Engine/Sandbox/assets/models/sponza/sponza.obj", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-		ASSERT(scene, "Model loading failed");
-      m_Model = std::make_shared<Scn::Model>(scene);
+      m_Model = AssetManager::GetModel("sponza/sponza.obj");
       
 //       auto bodyTex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("body_showroom_ddn.png"));
 //       m_Model->AddTexture("Body", bodyTex, Scn::Texture::Type::Bump);
@@ -215,7 +212,7 @@ public:
       constexpr float max_z   = 150.f;
       constexpr float y       = 200.f;
       constexpr float speed_x = 100.f;
-      constexpr float speed_z = 20.f;
+      constexpr float speed_z = 50.f;
 
       static int direction_x = 1;
       static int direction_z = 1;
@@ -224,11 +221,13 @@ public:
 
       pos.x += direction_x * speed_x * ts;
       if (abs(pos.x) > max_x) {
+         pos.x = max_x * direction_x;
          direction_x *= -1;
       }
 
       pos.z += direction_z * speed_z * ts;
       if (abs(pos.z) > max_z) {
+         pos.z = max_z * direction_z;
          direction_z *= -1;
       }
    }
