@@ -74,8 +74,8 @@ namespace Engine {
 
       protected:
          virtual BufferLayout	GetVboLayout(void) const;
-         virtual void			PrepareSubmit(const SPtr<Shader>& shader) const;
-         void					   SetupRenderable(void);
+         virtual void         PrepareSubmit(const SPtr<Shader>& shader) const;
+         void                 SetupRenderable(void);
 
          glm::mat4			   m_WorldTransform = glm::mat4(1.f);
          std::vector<Vertex>  m_Verts;
@@ -94,19 +94,19 @@ namespace Engine {
       public:
          Model(const aiScene* scene);
 
-         SPtr<Texture>	GetTexture(uint idx) { return m_Textures[idx]; }
-         void			   Render(void) { for (auto& m : m_Meshes) m->Render(); }
-         void			   Render(const SPtr<Shader>& shader) { for (auto& m : m_Meshes) m->Render(shader); }
+         SPtr<Texture>  GetTexture(uint idx) { return m_Textures[idx]; }
+         void           Render(void) { for (auto& m : m_Meshes) m->Render(); }
+         void           Render(const SPtr<Shader>& shader) { for (auto& m : m_Meshes) m->Render(shader); }
 
-         SPtr<Material>	GetMaterial(const std::string& name);
-         SPtr<Texture>	AddTexture(const std::string& matName, const SPtr<Engine::Texture>& texture, Texture::Type type);
-         SPtr<Texture>	AddTexture(const std::string& matName, const SPtr<Texture>& tex, Texture::Type type);
+         SPtr<Material> GetMaterial(const std::string& name);
+         SPtr<Texture>  AddTexture(const std::string& matName, const SPtr<Engine::Texture>& texture, Texture::Type type);
+         SPtr<Texture>  AddTexture(const std::string& matName, const SPtr<Texture>& tex, Texture::Type type);
          void           BindCubemap(const SPtr<CubeMap>& cubemap) { for (auto& m : m_Meshes) m->BindCubemap(cubemap); }
 
-         void			   SetTransform(const glm::mat4& transform);
+         void           SetTransform(const glm::mat4& transform);
 
       private:
-         void ProcessNode(const aiNode* node, const aiScene* scene);
+         void           ProcessNode(const aiNode* node, const aiScene* scene);
 
          glm::mat4 m_Transform = glm::mat4(1.f);
 
