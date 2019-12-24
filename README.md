@@ -1,6 +1,6 @@
 #  Mini OpenGL renderer
 
- - Basic phong shading
+ - Basic Phong shading
  - Asset loading using Assimp
  - .FBX/.OBJ models support
  - ImGui integrated
