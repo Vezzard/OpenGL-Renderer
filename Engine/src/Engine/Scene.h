@@ -41,13 +41,13 @@ namespace Engine {
          Texture(const SPtr<Engine::Texture>& tex)
             : m_RenderTex(tex) { }
 
-         static aiTextureType	   ConvertType(Type type);
-         bool					      IsLoaded(void) const { return m_RenderTex.get(); }
-         void					      Load(void);
-         const std::string&	   GetName(void) const { return m_Name; }
-         void					      SetType(Type type) { m_Type = type; }
-         Type					      GetType(void) const { return m_Type; }
-         SPtr<Engine::Texture>   GetRenderTex(void) { return m_RenderTex; }
+         static aiTextureType		ConvertType(Type type);
+         bool							IsLoaded(void) const { return m_RenderTex.get(); }
+         void							Load(void);
+         const std::string&		GetName(void) const { return m_Name; }
+         void							SetType(Type type) { m_Type = type; }
+         Type							GetType(void) const { return m_Type; }
+         SPtr<Engine::Texture>	GetRenderTex(void) { return m_RenderTex; }
 
       private:
          Type m_Type = Type::None;
@@ -65,21 +65,21 @@ namespace Engine {
 
          virtual ~Mesh() = default;
 
-         void           SetParentTransform(const glm::mat4& transform) { m_WorldTransform = transform * m_LocalTransform; }
-         void           Render(void) const;
-         void           Render(const SPtr<Engine::Shader>& shader) const;
-         void           GetIndecies(std::vector<uint>& indicies) const;
-         SPtr<Texture>  AddTexture(const SPtr<Engine::Texture>& tex, Texture::Type type);
-         void           BindCubemap(const SPtr<CubeMap>& cubemap);
+         void				SetParentTransform(const glm::mat4& transform) { m_WorldTransform = transform * m_LocalTransform; }
+         void				Render(void) const;
+         void				Render(const SPtr<Engine::Shader>& shader) const;
+         void				GetIndecies(std::vector<uint>& indicies) const;
+         SPtr<Texture>	AddTexture(const SPtr<Engine::Texture>& tex, Texture::Type type);
+         void				BindCubemap(const SPtr<CubeMap>& cubemap);
 
       protected:
          virtual BufferLayout	GetVboLayout(void) const;
-         virtual void         PrepareSubmit(const SPtr<Shader>& shader) const;
-         void                 SetupRenderable(void);
+         virtual void			PrepareSubmit(const SPtr<Shader>& shader) const;
+         void						SetupRenderable(void);
 
-         glm::mat4			   m_WorldTransform = glm::mat4(1.f);
-         std::vector<Vertex>  m_Verts;
-         std::vector<Face>	   m_Faces;
+         glm::mat4				m_WorldTransform = glm::mat4(1.f);
+         std::vector<Vertex>	m_Verts;
+         std::vector<Face>		m_Faces;
 
       private:
          std::string			m_Name;
@@ -94,19 +94,19 @@ namespace Engine {
       public:
          Model(const aiScene* scene);
 
-         SPtr<Texture>  GetTexture(uint idx) { return m_Textures[idx]; }
-         void           Render(void) { for (auto& m : m_Meshes) m->Render(); }
-         void           Render(const SPtr<Shader>& shader) { for (auto& m : m_Meshes) m->Render(shader); }
+         SPtr<Texture>	GetTexture(uint idx) { return m_Textures[idx]; }
+         void				Render(void) { for (auto& m : m_Meshes) m->Render(); }
+         void				Render(const SPtr<Shader>& shader) { for (auto& m : m_Meshes) m->Render(shader); }
 
          SPtr<Material> GetMaterial(const std::string& name);
-         SPtr<Texture>  AddTexture(const std::string& matName, const SPtr<Engine::Texture>& texture, Texture::Type type);
-         SPtr<Texture>  AddTexture(const std::string& matName, const SPtr<Texture>& tex, Texture::Type type);
-         void           BindCubemap(const SPtr<CubeMap>& cubemap) { for (auto& m : m_Meshes) m->BindCubemap(cubemap); }
+         SPtr<Texture>	AddTexture(const std::string& matName, const SPtr<Engine::Texture>& texture, Texture::Type type);
+         SPtr<Texture>	AddTexture(const std::string& matName, const SPtr<Texture>& tex, Texture::Type type);
+         void				BindCubemap(const SPtr<CubeMap>& cubemap) { for (auto& m : m_Meshes) m->BindCubemap(cubemap); }
 
-         void           SetTransform(const glm::mat4& transform);
+         void				SetTransform(const glm::mat4& transform);
 
       private:
-         void           ProcessNode(const aiNode* node, const aiScene* scene);
+         void				ProcessNode(const aiNode* node, const aiScene* scene);
 
          glm::mat4 m_Transform = glm::mat4(1.f);
 
