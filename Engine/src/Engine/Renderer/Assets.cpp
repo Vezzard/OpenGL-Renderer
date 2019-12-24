@@ -93,7 +93,7 @@ namespace Engine {
       Assimp::Importer importer;
       const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
       ASSERT(scene, "Model loading failed");
-      
+
       auto model = std::make_shared<Scn::Model>(scene);
       m_Data.emplace(name, model);
 

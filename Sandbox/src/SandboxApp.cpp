@@ -25,26 +25,11 @@ using namespace Engine;
 class ExampleLayer : public Layer
 {
 public:
-	ExampleLayer(float screenWidth, float screenHeight)
-		: Layer("Example")
-	{
+   ExampleLayer(float screenWidth, float screenHeight)
+      : Layer("Example")
+   {
       m_Model = AssetManager::GetModel("sponza/sponza.obj");
-      
-//       auto bodyTex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("body_showroom_ddn.png"));
-//       m_Model->AddTexture("Body", bodyTex, Scn::Texture::Type::Bump);
-//       auto tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("arm_showroom_ddn.png"));
-//       m_Model->AddTexture("Arm", tex, Scn::Texture::Type::Bump);
-//       tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("arm_showroom_refl.png"));
-//       m_Model->AddTexture("Arm", tex, Scn::Texture::Type::Reflection);
-//       tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("body_showroom_refl.png"));
-//       m_Model->AddTexture("Body", tex, Scn::Texture::Type::Reflection);
-//       tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("hand_showroom_refl.png"));
-//       m_Model->AddTexture("Hand", tex, Scn::Texture::Type::Reflection);
-//       tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("helmet_showroom_refl.png"));
-//       m_Model->AddTexture("Helmet", tex, Scn::Texture::Type::Reflection);
-//       tex = std::dynamic_pointer_cast<Texture, Texture2D>(AssetManager::GetTexture2D("leg_showroom_refl.png"));
-//       m_Model->AddTexture("Leg", tex, Scn::Texture::Type::Reflection);
-		
+
       m_Camera.SetPerspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 10000.0f);
 
       auto cubeMap = AssetManager::GetCubemap("cube2");
@@ -54,69 +39,69 @@ public:
       AssetManager::GetShader(m_ScreenShader);
       AssetManager::GetShader(m_DefaultShader);
 
-		auto lightShader = AssetManager::GetShader(m_LightSourceShader);
+      auto lightShader = AssetManager::GetShader(m_LightSourceShader);
       lightShader->Bind();
-		lightShader->UploadUniformFloat3("u_Color", glm::vec3(1.f, 1.f, 1.f));
+      lightShader->UploadUniformFloat3("u_Color", glm::vec3(1.f, 1.f, 1.f));
 
-		m_ScnLight.pointLights.emplace_back();
-		m_ScnLight.spotLights.emplace_back();
-		
-		auto& dl = m_ScnLight.dirLight;
-		dl.direction   = glm::vec3(-0.2f, -1.0f, -0.3f);
-		dl.ambient		= glm::vec3(0.1f, 0.1f, 0.1f);
-		dl.diffuse		= glm::vec3(0.4f, 0.4f, 0.4f);
-		dl.specular		= glm::vec3(0.5f, 0.5f, 0.5f);
+      m_ScnLight.pointLights.emplace_back();
+      m_ScnLight.spotLights.emplace_back();
 
-		auto& pl = m_ScnLight.pointLights[0];
-		pl.position		= glm::vec3(6.f, 14.f, 0.f);
-		pl.ambient		= glm::vec3(1.f, 1.f, 1.f);
-		pl.diffuse		= glm::vec3(0.8f, 0.8f, 0.8f);
-		pl.specular		= glm::vec3(1.0f, 1.0f, 1.0f);
-		pl.constant		= 1.0f;
-		pl.linear		= 0.00009f;
-		pl.quadratic	= 0.000032f;
+      auto& dl = m_ScnLight.dirLight;
+      dl.direction   = glm::vec3(-0.2f, -1.0f, -0.3f);
+      dl.ambient     = glm::vec3(0.1f, 0.1f, 0.1f);
+      dl.diffuse     = glm::vec3(0.4f, 0.4f, 0.4f);
+      dl.specular    = glm::vec3(0.5f, 0.5f, 0.5f);
 
-		auto& sl = m_ScnLight.spotLights[0];
-		sl.position = m_Camera.GetPosition();
-		Math::matGetForward(m_Camera.GetTransform(), sl.direction);
-		sl.ambient		= glm::vec3(0.0f, 0.0f, 0.0f);
-		sl.diffuse		= glm::vec3(1.0f, 1.0f, 1.0f);
-		sl.specular		= glm::vec3(1.0f, 1.0f, 1.0f);
-		sl.constant		= 1.0f;
-		sl.linear		= 0.0009f;
-		sl.quadratic	= 0.00032f;
-		sl.cutOff		= glm::cos(glm::radians(12.5f));
-		sl.outerCutOff	= glm::cos(glm::radians(15.0f));
+      auto& pl = m_ScnLight.pointLights[0];
+      pl.position    = glm::vec3(6.f, 14.f, 0.f);
+      pl.ambient     = glm::vec3(1.f, 1.f, 1.f);
+      pl.diffuse     = glm::vec3(0.8f, 0.8f, 0.8f);
+      pl.specular    = glm::vec3(1.0f, 1.0f, 1.0f);
+      pl.constant    = 1.0f;
+      pl.linear      = 0.00009f;
+      pl.quadratic   = 0.000032f;
 
-		for (const auto& l : m_ScnLight.pointLights)
-			m_LightSources.emplace_back(std::make_shared<Scn::Cube>(glm::translate(glm::mat4(1.f), l.position), 1.f));
+      auto& sl = m_ScnLight.spotLights[0];
+      sl.position = m_Camera.GetPosition();
+      Math::matGetForward(m_Camera.GetTransform(), sl.direction);
+      sl.ambient     = glm::vec3(0.0f, 0.0f, 0.0f);
+      sl.diffuse     = glm::vec3(1.0f, 1.0f, 1.0f);
+      sl.specular    = glm::vec3(1.0f, 1.0f, 1.0f);
+      sl.constant    = 1.0f;
+      sl.linear      = 0.0009f;
+      sl.quadratic   = 0.00032f;
+      sl.cutOff      = glm::cos(glm::radians(12.5f));
+      sl.outerCutOff = glm::cos(glm::radians(15.0f));
+
+      for (const auto& l : m_ScnLight.pointLights)
+         m_LightSources.emplace_back(std::make_shared<Scn::Cube>(glm::translate(glm::mat4(1.f), l.position), 1.f));
 
       m_ScreenFrameBuffer.reset(FrameBuffer::Create());
       m_ScreenFrameBuffer->Bind();
 
-		auto tex2d = Texture2D::Create(nullptr, screenWidth, screenHeight, 3);
-		auto texture = m_ScreenQuad->AddTexture(tex2d, Scn::Texture::Type::Diffuse);
+      auto tex2d = Texture2D::Create(nullptr, (int)screenWidth, (int)screenHeight, 3);
+      auto texture = m_ScreenQuad->AddTexture(tex2d, Scn::Texture::Type::Diffuse);
 
       m_ScreenFrameBuffer->AddTexture(texture->GetRenderTex());
 
       SPtr<RenderBuffer> renderBuffer;
-      renderBuffer.reset(RenderBuffer::Create(screenWidth, screenHeight));
+      renderBuffer.reset(RenderBuffer::Create((int)screenWidth, (int)screenHeight));
       m_ScreenFrameBuffer->AddRenderBuffer(renderBuffer);
 
       m_ScreenFrameBuffer->Check();
       m_ScreenFrameBuffer->Unbind();
-	}
+   }
 
-	unsigned int fb;
+   unsigned int fb;
 
-	void OnUpdate(Timestep ts) override
-	{
-		m_Camera.Update(ts);
+   void OnUpdate(Timestep ts) override
+   {
+      m_Camera.Update(ts);
 
-		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.f });
-		RenderCommand::Clear();
+      RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.f });
+      RenderCommand::Clear();
 
-		m_LightSources[0]->SetTransform(glm::translate(glm::mat4(1.f), m_ScnLight.pointLights[0].position));
+      m_LightSources[0]->SetTransform(glm::translate(glm::mat4(1.f), m_ScnLight.pointLights[0].position));
 
       Renderer::BeginScene(m_Camera.GetRenderCamera());
 
@@ -124,22 +109,16 @@ public:
       RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.f });
       RenderCommand::Clear();
 
-		auto& sl = m_ScnLight.spotLights[0];
-		sl.position = m_Camera.GetPosition();
-		Math::matGetForward(m_Camera.GetTransform(), sl.direction);
+      auto& sl = m_ScnLight.spotLights[0];
+      sl.position = m_Camera.GetPosition();
+      Math::matGetForward(m_Camera.GetTransform(), sl.direction);
 
       auto defaultShader = AssetManager::GetShader(m_DefaultShader);
-		defaultShader->Bind();
-		defaultShader->UploadUniformsDefaultLighting(m_ScnLight, m_Camera.GetPosition());
-		defaultShader->UploadUniformInt("u_dbgDisableNormalMapping", m_DbgDisableNormalMapping ? 1 : 0);
+      defaultShader->Bind();
+      defaultShader->UploadUniformsDefaultLighting(m_ScnLight, m_Camera.GetPosition());
+      defaultShader->UploadUniformInt("u_dbgDisableNormalMapping", m_DbgDisableNormalMapping ? 1 : 0);
 
-// 		m_Model->SetTransform(glm::translate(glm::mat4(1.f), glm::vec3(5.f, 0.f, -4.f)));
-// 		m_Model->Render(defaultShader);
-// 
-// 		m_Model->SetTransform(glm::translate(glm::mat4(1.f), glm::vec3(-5.f, 0.f, -4.f)));
-// 		m_Model->Render(defaultShader);
-
-		m_Model->SetTransform(glm::mat4(1.f));
+      m_Model->SetTransform(glm::mat4(1.f));
       m_Model->Render(defaultShader);
 
       RenderCommand::CullFaces(false);
@@ -148,7 +127,7 @@ public:
       RenderCommand::CullFaces(true);
 
       auto lightShader = AssetManager::GetShader(m_LightSourceShader);
-		for (const auto& ls : m_LightSources)
+      for (const auto& ls : m_LightSources)
          ls->Render(lightShader);
 
       m_ScreenFrameBuffer->Unbind();
@@ -156,55 +135,55 @@ public:
       RenderCommand::Clear();
 
       auto screenShader = AssetManager::GetShader(m_ScreenShader);
-		screenShader->Bind();
-		screenShader->UploadUniformFloat("u_dbgPPOffset", m_DbgPPOffset);
-		screenShader->UploadUniformInt("u_dbgPPEffect", m_DbgPPEffect);
+      screenShader->Bind();
+      screenShader->UploadUniformFloat("u_dbgPPOffset", m_DbgPPOffset);
+      screenShader->UploadUniformInt("u_dbgPPEffect", m_DbgPPEffect);
       m_ScreenQuad->Render(screenShader);
 
-		Renderer::EndScene();
+      Renderer::EndScene();
 
       AnimatePointLight(ts);
-	}
+   }
 
-	bool m_DbgDisableNormalMapping = false;
-	float m_DbgPPOffset = 0.003f;
-	int m_DbgPPEffect = 0;
+   bool m_DbgDisableNormalMapping = false;
+   float m_DbgPPOffset = 0.003f;
+   int m_DbgPPEffect = 0;
 
-	virtual void OnImGuiRender() override
-	{
-		auto& dl = m_ScnLight.dirLight;
-		auto& pl = m_ScnLight.pointLights[0];
-		auto& sl = m_ScnLight.spotLights[0];
+   virtual void OnImGuiRender() override
+   {
+      auto& dl = m_ScnLight.dirLight;
+      auto& pl = m_ScnLight.pointLights[0];
+      auto& sl = m_ScnLight.spotLights[0];
 
-		ImGui::Begin("Settings");
-		
-		ImGui::SliderFloat3("Dir light direction",	glm::value_ptr(dl.direction), -1.f, 0.f);
-		ImGui::ColorEdit3("Dir light ambient",		   glm::value_ptr(dl.ambient));
-		ImGui::ColorEdit3("Dir light diffuse",		   glm::value_ptr(dl.diffuse));
-		ImGui::ColorEdit3("Dir light specular",		glm::value_ptr(dl.specular));
+      ImGui::Begin("Settings");
 
-		ImGui::SliderFloat3("Point light position",	glm::value_ptr(pl.position), -1500.f, 1500.f);
-		ImGui::ColorEdit3("Point light ambient",	   glm::value_ptr(pl.ambient));
-		ImGui::ColorEdit3("Point light diffuse",	   glm::value_ptr(pl.diffuse));
-		ImGui::ColorEdit3("Point light specular",	   glm::value_ptr(pl.specular));
-		ImGui::SliderFloat("Point light constant",	&pl.constant, 0.f, 1.f);
-		ImGui::SliderFloat("Point light linear",	   &pl.linear, 0.f, 0.001f);
-		ImGui::SliderFloat("Point light quadratic",	&pl.quadratic, 0.f, 0.001f);
+      ImGui::SliderFloat3("Dir light direction", glm::value_ptr(dl.direction), -1.f, 0.f);
+      ImGui::ColorEdit3("Dir light ambient", glm::value_ptr(dl.ambient));
+      ImGui::ColorEdit3("Dir light diffuse", glm::value_ptr(dl.diffuse));
+      ImGui::ColorEdit3("Dir light specular", glm::value_ptr(dl.specular));
 
-		ImGui::ColorEdit3("Spot light ambient",		glm::value_ptr(sl.ambient));
-		ImGui::ColorEdit3("Spot light diffuse",		glm::value_ptr(sl.diffuse));
-		ImGui::ColorEdit3("Spot light specular",	   glm::value_ptr(sl.specular));
-      ImGui::SliderFloat("Spot light constant",    &sl.constant, 0.f, 1.f);
-		ImGui::SliderFloat("Spot light linear",		&sl.linear, 0.f, 0.001f);
-		ImGui::SliderFloat("Spot light quadratic",	&sl.quadratic, 0.f, 0.001f);
+      ImGui::SliderFloat3("Point light position", glm::value_ptr(pl.position), -1500.f, 1500.f);
+      ImGui::ColorEdit3("Point light ambient", glm::value_ptr(pl.ambient));
+      ImGui::ColorEdit3("Point light diffuse", glm::value_ptr(pl.diffuse));
+      ImGui::ColorEdit3("Point light specular", glm::value_ptr(pl.specular));
+      ImGui::SliderFloat("Point light constant", &pl.constant, 0.f, 1.f);
+      ImGui::SliderFloat("Point light linear", &pl.linear, 0.f, 0.001f);
+      ImGui::SliderFloat("Point light quadratic", &pl.quadratic, 0.f, 0.001f);
 
-		ImGui::Checkbox("Disable normal mapping",	   &m_DbgDisableNormalMapping);
+      ImGui::ColorEdit3("Spot light ambient", glm::value_ptr(sl.ambient));
+      ImGui::ColorEdit3("Spot light diffuse", glm::value_ptr(sl.diffuse));
+      ImGui::ColorEdit3("Spot light specular", glm::value_ptr(sl.specular));
+      ImGui::SliderFloat("Spot light constant", &sl.constant, 0.f, 1.f);
+      ImGui::SliderFloat("Spot light linear", &sl.linear, 0.f, 0.001f);
+      ImGui::SliderFloat("Spot light quadratic", &sl.quadratic, 0.f, 0.001f);
 
-		ImGui::SliderFloat("Post proc offset",		   &m_DbgPPOffset, 0.f, 0.01f);
-		ImGui::SliderInt("Post proc effect",		   &m_DbgPPEffect, 0, 3);
+      ImGui::Checkbox("Disable normal mapping", &m_DbgDisableNormalMapping);
 
-		ImGui::End();
-	}
+      ImGui::SliderFloat("Post proc offset", &m_DbgPPOffset, 0.f, 0.01f);
+      ImGui::SliderInt("Post proc effect", &m_DbgPPEffect, 0, 3);
+
+      ImGui::End();
+   }
 
    void AnimatePointLight(Timestep ts)
    {
@@ -232,44 +211,44 @@ public:
       }
    }
 
-	void OnEvent(Event& event) override
-	{
-	}
+   void OnEvent(Event& event) override
+   {
+   }
 private:
-	SceneLight m_ScnLight;
-	SPtr<Scn::Model> m_Model;
+   SceneLight m_ScnLight;
+   SPtr<Scn::Model> m_Model;
 
-	std::vector<SPtr<Scn::Cube>> m_LightSources;
+   std::vector<SPtr<Scn::Cube>> m_LightSources;
 
    SPtr<Scn::SkyBox> m_Skybox = std::make_shared<Scn::SkyBox>();
-	SPtr<Scn::Quad> m_ScreenQuad = std::make_shared<Scn::Quad>(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 0.f)));
+   SPtr<Scn::Quad> m_ScreenQuad = std::make_shared<Scn::Quad>(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 0.f)));
 
-	std::string m_DefaultShader      = "default";
-	std::string m_LightSourceShader  = "flat_color";
-	std::string m_ScreenShader       = "default_screen";
-   std::string m_ScyboxShader       = "default_skybox";
+   std::string m_DefaultShader = "default";
+   std::string m_LightSourceShader = "flat_color";
+   std::string m_ScreenShader = "default_screen";
+   std::string m_ScyboxShader = "default_skybox";
 
    SPtr<FrameBuffer> m_ScreenFrameBuffer;
 
-	FlyCamera m_Camera;
+   FlyCamera m_Camera;
 };
 
 class Sandbox : public Application
 {
 public:
-	Sandbox()
-	{
-		PushLayer(new ExampleLayer((float)GetWindow().GetWidth(), (float)GetWindow().GetHeight()));
-	}
+   Sandbox()
+   {
+      PushLayer(new ExampleLayer((float)GetWindow().GetWidth(), (float)GetWindow().GetHeight()));
+   }
 
-	~Sandbox()
-	{
+   ~Sandbox()
+   {
 
-	}
+   }
 
 };
 
 Engine::Application* Engine::CreateApplication()
 {
-	return new Sandbox();
+   return new Sandbox();
 }

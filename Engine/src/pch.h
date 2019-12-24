@@ -16,5 +16,5 @@
 #include "Core.h"
 
 #ifdef PLATFORM_WINDOWS
-	#include <Windows.h>
+#include <Windows.h>
 #endif

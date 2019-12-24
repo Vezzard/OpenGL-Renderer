@@ -11,3 +11,4 @@ Sandbox/assets/shaders/simple_texture_f.glsl
 Sandbox/assets/shaders/simple_texture_v.glsl
 Sandbox/assets/shaders/simple_v.glsl
 Sandbox/imgui.ini
+*.stackdump

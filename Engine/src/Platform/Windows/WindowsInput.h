@@ -5,20 +5,20 @@
 
 namespace Engine {
 
-	class WindowsInput : public Input
-	{
-	public:
-		Position m_ScrollState;
+   class WindowsInput : public Input
+   {
+   public:
+      Position m_ScrollState;
 
-	protected:
-		virtual bool		IsKeyPressedImpl		(int keycode) override;
-		virtual bool		IsMouseButtonPressedImpl(int button) override;
-		virtual Position	GetMousePositionImpl	(void) override;
-		virtual float		GetMouseXImpl			(void) override;
-		virtual float		GetMouseYImpl			(void) override;
-		virtual Position	GetScrollImpl			(void) override;
-		virtual void		OnUpdateImpl			(void) override;
-		virtual void		InitImpl(void) override;
-	};
+   protected:
+      virtual bool		IsKeyPressedImpl(int keycode) override;
+      virtual bool		IsMouseButtonPressedImpl(int button) override;
+      virtual Position	GetMousePositionImpl(void) override;
+      virtual float		GetMouseXImpl(void) override;
+      virtual float		GetMouseYImpl(void) override;
+      virtual Position	GetScrollImpl(void) override;
+      virtual void		OnUpdateImpl(void) override;
+      virtual void		InitImpl(void) override;
+   };
 
 }

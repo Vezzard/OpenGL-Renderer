@@ -56,10 +56,10 @@ namespace Engine {
       AssetManager(void) = default;
 
    public:
-      static SPtr<Shader>      GetShader      (const std::string& name) { return Instance().m_ShaderCreator.Get(name); }
-      static SPtr<Texture2D>   GetTexture2D   (const std::string& name) { return Instance().m_TextureCreator.Get(name); }
-      static SPtr<CubeMap>     GetCubemap     (const std::string& name) { return Instance().m_CubemapCreator.Get(name); }
-      static SPtr<Scn::Model>  GetModel       (const std::string& name) { return Instance().m_ModelCreator.Get(name); }
+      static SPtr<Shader>      GetShader(const std::string& name) { return Instance().m_ShaderCreator.Get(name); }
+      static SPtr<Texture2D>   GetTexture2D(const std::string& name) { return Instance().m_TextureCreator.Get(name); }
+      static SPtr<CubeMap>     GetCubemap(const std::string& name) { return Instance().m_CubemapCreator.Get(name); }
+      static SPtr<Scn::Model>  GetModel(const std::string& name) { return Instance().m_ModelCreator.Get(name); }
 
    private:
       static AssetManager& Instance(void);

@@ -7,52 +7,52 @@
 
 namespace Engine {
 
-VertexBuffer* VertexBuffer::Create(float* vertices, uint size)
-{
-	switch (Renderer::GetAPI())
-	{
-		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return new OpenGLVertexBuffer(vertices, size);
-	}
-
-	CORE_ASSERT(false, "Unknown RendererAPI!");
-	return nullptr;
-}
-
-IndexBuffer* IndexBuffer::Create(uint* indices, uint size)
-{
-	switch (Renderer::GetAPI())
-	{
-		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return new OpenGLIndexBuffer(indices, size);
-	}
-
-	CORE_ASSERT(false, "Unknown RendererAPI!");
-	return nullptr;
-}
-
-Engine::FrameBuffer* FrameBuffer::Create()
-{
-   switch (Renderer::GetAPI())
+   VertexBuffer* VertexBuffer::Create(float* vertices, uint size)
    {
-   case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-   case RendererAPI::API::OpenGL:  return new OpenGLFrameBuffer();
+      switch (Renderer::GetAPI())
+      {
+      case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+      case RendererAPI::API::OpenGL:  return new OpenGLVertexBuffer(vertices, size);
+      }
+
+      CORE_ASSERT(false, "Unknown RendererAPI!");
+      return nullptr;
    }
 
-   CORE_ASSERT(false, "Unknown RendererAPI!");
-   return nullptr;
-}
-
-Engine::RenderBuffer* RenderBuffer::Create(uint windth, uint heigth)
-{
-   switch (Renderer::GetAPI())
+   IndexBuffer* IndexBuffer::Create(uint* indices, uint size)
    {
-   case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-   case RendererAPI::API::OpenGL:  return new OpenGLRenderBuffer(windth, heigth);
+      switch (Renderer::GetAPI())
+      {
+      case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+      case RendererAPI::API::OpenGL:  return new OpenGLIndexBuffer(indices, size);
+      }
+
+      CORE_ASSERT(false, "Unknown RendererAPI!");
+      return nullptr;
    }
 
-   CORE_ASSERT(false, "Unknown RendererAPI!");
-   return nullptr;
-}
+   Engine::FrameBuffer* FrameBuffer::Create()
+   {
+      switch (Renderer::GetAPI())
+      {
+      case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+      case RendererAPI::API::OpenGL:  return new OpenGLFrameBuffer();
+      }
+
+      CORE_ASSERT(false, "Unknown RendererAPI!");
+      return nullptr;
+   }
+
+   Engine::RenderBuffer* RenderBuffer::Create(uint windth, uint heigth)
+   {
+      switch (Renderer::GetAPI())
+      {
+      case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+      case RendererAPI::API::OpenGL:  return new OpenGLRenderBuffer(windth, heigth);
+      }
+
+      CORE_ASSERT(false, "Unknown RendererAPI!");
+      return nullptr;
+   }
 
 }

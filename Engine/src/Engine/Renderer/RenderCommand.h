@@ -4,22 +4,22 @@
 
 namespace Engine {
 
-	class RenderCommand
-	{
-	public:
-		inline static void Init()
-		{
-			s_RendererAPI->Init();
-		}
+   class RenderCommand
+   {
+   public:
+      inline static void Init()
+      {
+         s_RendererAPI->Init();
+      }
 
-		inline static void SetClearColor(const glm::vec4& color)
-		{
-			s_RendererAPI->SetClearColor(color);
-		}
+      inline static void SetClearColor(const glm::vec4& color)
+      {
+         s_RendererAPI->SetClearColor(color);
+      }
 
-		inline static void Clear()
-		{
-			s_RendererAPI->Clear();
+      inline static void Clear()
+      {
+         s_RendererAPI->Clear();
       }
 
       inline static void DepthMask(bool enable)
@@ -32,17 +32,17 @@ namespace Engine {
          s_RendererAPI->CullFaces(enable);
       }
 
-		inline static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
-		{
-			s_RendererAPI->DrawIndexed(vertexArray);
-		}
-
-		inline static void Draw(const std::shared_ptr<VertexArray>& vertexArray)
-		{
-			s_RendererAPI->Draw(vertexArray);
+      inline static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
+      {
+         s_RendererAPI->DrawIndexed(vertexArray);
       }
-	private:
-		static RendererAPI* s_RendererAPI;
-	};
+
+      inline static void Draw(const std::shared_ptr<VertexArray>& vertexArray)
+      {
+         s_RendererAPI->Draw(vertexArray);
+      }
+   private:
+      static RendererAPI* s_RendererAPI;
+   };
 
 }
