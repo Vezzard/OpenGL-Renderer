@@ -11,7 +11,7 @@ namespace Engine {
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLTexture2D>(path);
+		case RendererAPI::API::OpenGL:  return MakeShared<OpenGLTexture2D>(path);
 		}
 
 		CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -23,7 +23,7 @@ namespace Engine {
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLTexture2D>(data, width, height, channels);
+		case RendererAPI::API::OpenGL:  return MakeShared<OpenGLTexture2D>(data, width, height, channels);
 		}
 
 		CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -35,7 +35,7 @@ namespace Engine {
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLCubeMap>(paths);
+		case RendererAPI::API::OpenGL:  return MakeShared<OpenGLCubeMap>(paths);
 		}
 
 		CORE_ASSERT(false, "Unknown RendererAPI!");

@@ -55,6 +55,12 @@ namespace Engine {
 
 	template<typename T>
 	using WPtr = std::weak_ptr<T>;
+
+	template <class T, class... Args>
+	SPtr<T> MakeShared(Args&&... args) {
+		return std::make_shared<T>(std::forward<Args>(args)...);
+	}
+
 }
 
 

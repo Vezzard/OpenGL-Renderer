@@ -12,6 +12,8 @@ namespace Engine {
 	class AssetCreator
 	{
 	public:
+		virtual ~AssetCreator() = default;
+		
 		virtual SPtr<T> Get(const std::string& name) = 0;
 
 	protected:
@@ -19,7 +21,7 @@ namespace Engine {
 	};
 
 
-	class ShaderCreator : public AssetCreator<Shader>
+	class ShaderCreator final : public AssetCreator<Shader>
 	{
 	public:
 		virtual SPtr<Shader> Get(const std::string& name) override;
@@ -29,21 +31,21 @@ namespace Engine {
 	};
 
 
-	class TextureCreator : public AssetCreator<Texture2D>
+	class TextureCreator final : public AssetCreator<Texture2D>
 	{
 	public:
 		virtual SPtr<Texture2D> Get(const std::string& name) override;
 	};
 
 
-	class CubemapCreator : public AssetCreator<CubeMap>
+	class CubemapCreator final : public AssetCreator<CubeMap>
 	{
 	public:
 		virtual SPtr<CubeMap> Get(const std::string& name) override;
 	};
 
 
-	class ModelCreator : public AssetCreator<Scn::Model>
+	class ModelCreator final : public AssetCreator<Scn::Model>
 	{
 	public:
 		virtual SPtr<Scn::Model> Get(const std::string& name) override;
@@ -53,7 +55,7 @@ namespace Engine {
 	class AssetManager
 	{
 	private:
-		AssetManager(void) = default;
+		AssetManager() = default;
 
 	public:
 		static SPtr<Shader>      GetShader(const std::string& name) { return Instance().m_ShaderCreator.Get(name); }
@@ -62,7 +64,7 @@ namespace Engine {
 		static SPtr<Scn::Model>  GetModel(const std::string& name) { return Instance().m_ModelCreator.Get(name); }
 
 	private:
-		static AssetManager& Instance(void);
+		static AssetManager& Instance();
 
 		ShaderCreator  m_ShaderCreator;
 		TextureCreator m_TextureCreator;

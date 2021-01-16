@@ -10,7 +10,7 @@ namespace Engine {
 	class FlyCamera
 	{
 	public:
-		FlyCamera(void) : m_Camera(std::make_shared<Camera>()) { m_Camera->RecalculateViewMatrix(m_Transform); }
+		FlyCamera(void) : m_Camera(MakeShared<Camera>()) { m_Camera->RecalculateViewMatrix(m_Transform); }
 		FlyCamera(const SPtr<Camera>& camera) : m_Camera(camera) { m_Camera->RecalculateViewMatrix(m_Transform); }
 
 		void SetPerspective(float fovy, float aspect, float zNear, float zFar) { m_Camera->SetPerspective(fovy, aspect, zNear, zFar, m_Transform); }

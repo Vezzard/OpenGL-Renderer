@@ -84,7 +84,7 @@ namespace Engine {
 		private:
 			std::string m_Name;
 			glm::mat4 m_LocalTransform = glm::mat4(1.f);
-			SPtr<Material> m_Material = std::make_shared<Material>();
+			SPtr<Material> m_Material = MakeShared<Material>();
 			SPtr<VertexArray> m_VAO;
 		};
 

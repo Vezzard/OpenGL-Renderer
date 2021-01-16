@@ -29,13 +29,13 @@ namespace Engine {
 			m_Textures.reserve(scene->mNumTextures);
 			for (uint i = 0; i < scene->mNumTextures; ++i) {
 				aiTexture* aiTex = scene->mTextures[i];
-				auto& t = m_Textures.emplace_back(std::make_shared<Texture>(aiTex->mName));
+				auto& t = m_Textures.emplace_back(MakeShared<Texture>(aiTex->mName));
 				t->Load();
 			}
 
 			m_Materials.reserve(scene->mNumMaterials);
 			for (uint i = 0; i < scene->mNumMaterials; ++i) {
-				m_Materials.emplace_back(std::make_shared<Material>(scene->mMaterials[i], *this));
+				m_Materials.emplace_back(MakeShared<Material>(scene->mMaterials[i], *this));
 			}
 
 			m_Meshes.reserve(scene->mNumMeshes);
@@ -57,7 +57,7 @@ namespace Engine {
 
 		SPtr<Texture> Model::AddTexture(const std::string& matName, const SPtr<Engine::Texture>& texture, Texture::Type type)
 		{
-			auto tex = std::make_shared<Engine::Scn::Texture>(texture);
+			auto tex = MakeShared<Engine::Scn::Texture>(texture);
 			tex->Load();
 			return AddTexture(matName, tex, type);
 		}
@@ -84,7 +84,7 @@ namespace Engine {
 			MatAssimpToGlm(node->mTransformation, transform);
 			for (uint i = 0; i < node->mNumMeshes; ++i) {
 				aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-				m_Meshes.emplace_back(std::make_shared<Mesh>(mesh, transform, m_Transform, m_Materials[mesh->mMaterialIndex]));
+				m_Meshes.emplace_back(MakeShared<Mesh>(mesh, transform, m_Transform, m_Materials[mesh->mMaterialIndex]));
 			}
 
 			for (uint i = 0; i < node->mNumChildren; ++i) {
@@ -230,7 +230,7 @@ namespace Engine {
 
 		Engine::SPtr<Texture> Mesh::AddTexture(const SPtr<Engine::Texture>& tex, Texture::Type type)
 		{
-			auto texture = std::make_shared<Texture>(tex);
+			auto texture = MakeShared<Texture>(tex);
 			texture->SetType(type);
 			m_Material->AddTexture(texture);
 			return texture;
@@ -270,7 +270,7 @@ namespace Engine {
 				}
 				else {
 					auto tex = std::dynamic_pointer_cast<Engine::Texture, Texture2D>(AssetManager::GetTexture2D(spath));
-					texture = std::make_shared<Texture>(tex);
+					texture = MakeShared<Texture>(tex);
 				}
 				texture->SetType(type);
 				m_Textures.emplace_back(texture);
