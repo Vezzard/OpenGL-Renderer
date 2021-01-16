@@ -8,30 +8,4 @@
       <UniqueIdentifier>{2aafbf83-3de5-4253-885f-b6a1be7a2459}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="assets\shaders\default_f.glsl">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="assets\shaders\default_v.glsl">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="assets\shaders\flat_color_v.glsl">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="assets\shaders\flat_color_f.glsl">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="assets\shaders\default_screen_f.glsl">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="assets\shaders\default_screen_v.glsl">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="assets\shaders\default_skybox_f.glsl">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="assets\shaders\default_skybox_v.glsl">
-      <Filter>shaders</Filter>
-    </None>
-  </ItemGroup>
 </Project>
