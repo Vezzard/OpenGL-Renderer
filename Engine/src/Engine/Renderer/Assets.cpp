@@ -43,7 +43,7 @@ namespace Engine {
 	{
 		const std::string filename = fs::path(name).filename().string();
 
-		auto& it = m_Data.find(filename);
+		const auto it = m_Data.find(filename);
 		if (it != m_Data.end()) {
 			return it->second;
 		}
@@ -58,7 +58,7 @@ namespace Engine {
 
 	SPtr<CubeMap> CubemapCreator::Get(const std::string& name)
 	{
-		auto& it = m_Data.find(name);
+		const auto it = m_Data.find(name);
 		if (it != m_Data.end()) {
 			return it->second;
 		}
@@ -82,7 +82,7 @@ namespace Engine {
 
 	Engine::SPtr<Engine::Scn::Model> ModelCreator::Get(const std::string& name)
 	{
-		auto& it = m_Data.find(name);
+		const auto it = m_Data.find(name);
 		if (it != m_Data.end()) {
 			return it->second;
 		}
