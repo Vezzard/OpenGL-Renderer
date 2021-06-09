@@ -11,7 +11,7 @@
 #  Setup
  
  - Execute GenerateProjects.bat
- - Open solution with VS2017
+ - Open solution with VS2019
  - Build solution and run
  - Use right mouse button + WASD to controll the camera
  - Use ImGui menu Settings for scene and renderer customization
