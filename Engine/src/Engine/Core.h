@@ -62,6 +62,3 @@ namespace Engine {
 	}
 
 }
-
-
-const std::string projectDir = "D:/Projects/Git/Engine/";

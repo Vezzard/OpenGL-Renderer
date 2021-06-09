@@ -18,7 +18,7 @@ namespace Engine {
 			return it->second;
 		}
 
-		static std::string shadersPath = "assets/shaders/";
+		static std::string shadersPath = "../assets/shaders/";
 		std::string ext = GetShaderExt();
 		SPtr<Shader> shader;
 		shader.reset(Shader::Create(shadersPath + name + "_v" + ext, shadersPath + name + "_f" + ext));
@@ -48,7 +48,7 @@ namespace Engine {
 			return it->second;
 		}
 
-		static const std::string texturesPath = "assets/textures/sponza/";
+		static const std::string texturesPath = "../assets/textures/sponza/";
 		auto tex = Texture2D::Create(texturesPath + filename);
 		m_Data.emplace(filename, tex);
 
@@ -63,7 +63,7 @@ namespace Engine {
 			return it->second;
 		}
 
-		static const std::string texturesPath = "assets/textures/Cubemaps/";
+		static const std::string texturesPath = "../assets/textures/Cubemaps/";
 		std::string path = texturesPath + name + "/";
 		std::vector<std::string> names = {
 		   path + "posx.jpg",
@@ -87,11 +87,11 @@ namespace Engine {
 			return it->second;
 		}
 
-		static const std::string modelsPath = "Sandbox/assets/models/";
-		const std::string path = projectDir + modelsPath + name;
+		static const std::string modelsPath = "/../assets/models/";
+		const std::string path = fs::current_path().string() + modelsPath + name;
 
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+		const aiScene* scene = importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 		ASSERT(scene, "Model loading failed");
 
 		auto model = MakeShared<Scn::Model>(scene);
