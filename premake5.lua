@@ -54,7 +54,7 @@ project "Engine"
 	defines
 	{
 		"_CRT_SECURE_NO_WARNINGS",
-		--"VULKAN"
+		"VULKAN"
 	}
 
 	includedirs
@@ -169,17 +169,21 @@ project "VulkanSandbox"
 
 	includedirs
 	{
+		"%{IncludeDir.GLFW}",
 		"Engine/vendor/spdlog/include",
 		"Engine/src",
 		"Engine/vendor",
 		"Engine/vendor/assimp/include",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.vulkan}",
 	}
 
 	links
 	{
+		"GLFW",
 		"Engine",
-		"assimp"
+		"assimp",
+		"%{VULKAN_SDK}/Lib/vulkan-1.lib"
 	}
 
 	filter "system:windows"
